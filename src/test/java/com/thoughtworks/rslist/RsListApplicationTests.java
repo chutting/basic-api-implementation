@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -82,5 +83,25 @@ class RsListApplicationTests {
         mockMvc.perform(get("/rs/list"))
             .andExpect(status().isOk())
             .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n4  第四条事件  教育\n"));
+    }
+
+    @Test
+    void shouldCouldModifyResearchByIndex() throws Exception {
+        Research researchWithIndexOneModified = new Research("经过修改后的第一条事件", "情感");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String researchIndexOneJsonStringModified = objectMapper.writeValueAsString(researchWithIndexOneModified);
+
+        mockMvc.perform(get("/rs/list"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+
+        mockMvc.perform(put("/rs/modify/1")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(researchIndexOneJsonStringModified))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(get("/rs/list"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1  经过修改后的第一条事件  情感\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
     }
 }

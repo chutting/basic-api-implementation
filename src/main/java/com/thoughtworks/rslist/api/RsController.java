@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class RsController {
@@ -43,10 +45,19 @@ public class RsController {
   }
 
   @PostMapping("/rs/add")
-  public void addResearch(@RequestBody String researchString) throws JsonProcessingException {
+  public void addResearch(@RequestBody String researchJsonString) throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
-    Research researchWantToAdd = objectMapper.readValue(researchString, Research.class);
+    Research researchWantToAdd = objectMapper.readValue(researchJsonString, Research.class);
     rsList.add(researchWantToAdd);
+  }
+
+
+  @PutMapping(value = "rs/modify/{id}")
+  public void modifyResearch(@PathVariable int id, @RequestBody Research research) throws Exception {
+    Research researchWantToModified = rsList.get(id - 1);
+    researchWantToModified.setName(research.getName());
+    researchWantToModified.setKeyword(research.getKeyword());
+    rsList.set(id - 1, researchWantToModified);
   }
 
 

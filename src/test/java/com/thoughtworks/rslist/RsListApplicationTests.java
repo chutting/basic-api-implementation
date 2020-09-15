@@ -25,11 +25,15 @@ class RsListApplicationTests {
     @Autowired
     MockMvc mockMvc;
 
-    @Test
-    void shouldGetRsListString() throws Exception {
+    private void checkRsListOriginalValue() throws Exception {
         mockMvc.perform(get("/rs/list"))
             .andExpect(status().isOk())
             .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+    }
+
+    @Test
+    void shouldGetRsListString() throws Exception {
+        checkRsListOriginalValue();
     }
 
     @Test
@@ -69,9 +73,7 @@ class RsListApplicationTests {
         Research researchWithIndexFour = new Research("第四条事件", "教育");
         String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
 
-        mockMvc.perform(get("/rs/list"))
-            .andExpect(status().isOk())
-            .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+        checkRsListOriginalValue();
 
         mockMvc.perform(post("/rs/add")
             .content(researchIndexFourJsonString)
@@ -93,9 +95,7 @@ class RsListApplicationTests {
         String researchIndexTwoJsonStringModified = convertResearchToJsonString(researchWithIndexTwoModified);
         String researchIndexThreeJsonStringModified = convertResearchToJsonString(researchWithIndexThreeModified);
 
-        mockMvc.perform(get("/rs/list"))
-            .andExpect(status().isOk())
-            .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+        checkRsListOriginalValue();
 
         performPut("/rs/modify/1", researchIndexOneJsonStringModified);
         performPut("/rs/modify/2", researchIndexTwoJsonStringModified);
@@ -121,9 +121,7 @@ class RsListApplicationTests {
 
     @Test
     void shouldCouldDeleteByIndex() throws Exception {
-        mockMvc.perform(get("/rs/list"))
-            .andExpect(status().isOk())
-            .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+        checkRsListOriginalValue();
 
         mockMvc.perform(delete("/rs/delete/1"))
             .andExpect(status().isOk());

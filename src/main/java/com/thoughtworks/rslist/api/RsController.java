@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -15,10 +16,16 @@ public class RsController {
       new Research("第三条事件", "娱乐"));
 
   @GetMapping("/rs/list")
-  public String getRsList() {
+  public String getRsList(@RequestParam(required = false) Integer start,
+                          @RequestParam(required = false) Integer end) {
+    start = (start == null ? 1 : start);
+    end = (end == null ? rsList.size() : end);
+
     StringBuilder result = new StringBuilder();
-    for (int index = 0; index < rsList.size(); index++) {
-      result.append(index + 1).append("  ").append(rsList.get(index).toString()).append("\n");
+    List<Research> outputRsList = rsList.subList(start - 1, end);
+
+    for (int index = 0; index < outputRsList.size(); index++) {
+      result.append(index + 1).append("  ").append(outputRsList.get(index).toString()).append("\n");
     }
 
     return String.valueOf(result);

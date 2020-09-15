@@ -53,10 +53,16 @@ public class RsController {
 
 
   @PutMapping(value = "rs/modify/{id}")
-  public void modifyResearch(@PathVariable int id, @RequestBody Research research) throws Exception {
+  public void modifyResearch(@PathVariable int id, @RequestBody Research research) {
+
     Research researchWantToModified = rsList.get(id - 1);
-    researchWantToModified.setName(research.getName());
-    researchWantToModified.setKeyword(research.getKeyword());
+    if (!research.getName().isEmpty()) {
+      researchWantToModified.setName(research.getName());
+    }
+    if (!research.getKeyword().isEmpty()) {
+      researchWantToModified.setKeyword(research.getKeyword());
+    }
+
     rsList.set(id - 1, researchWantToModified);
   }
 

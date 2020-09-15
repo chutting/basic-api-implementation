@@ -88,8 +88,13 @@ class RsListApplicationTests {
     @Test
     void shouldCouldModifyResearchByIndex() throws Exception {
         Research researchWithIndexOneModified = new Research("经过修改后的第一条事件", "情感");
+        Research researchWithIndexTwoModified = new Research("经过修改后的第二条事件", "");
+        Research researchWithIndexThreeModified = new Research("", "军事");
+
         ObjectMapper objectMapper = new ObjectMapper();
         String researchIndexOneJsonStringModified = objectMapper.writeValueAsString(researchWithIndexOneModified);
+        String researchIndexTwoJsonStringModified = objectMapper.writeValueAsString(researchWithIndexTwoModified);
+        String researchIndexThreeJsonStringModified = objectMapper.writeValueAsString(researchWithIndexThreeModified);
 
         mockMvc.perform(get("/rs/list"))
             .andExpect(status().isOk())
@@ -100,8 +105,20 @@ class RsListApplicationTests {
             .content(researchIndexOneJsonStringModified))
             .andExpect(status().isOk());
 
+        mockMvc.perform(put("/rs/modify/2")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(researchIndexTwoJsonStringModified))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(put("/rs/modify/3")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(researchIndexThreeJsonStringModified))
+            .andExpect(status().isOk());
+
         mockMvc.perform(get("/rs/list"))
             .andExpect(status().isOk())
-            .andExpect(content().string("1  经过修改后的第一条事件  情感\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+            .andExpect(content().string("1  经过修改后的第一条事件  情感\n2  经过修改后的第二条事件  政治\n3  第三条事件  军事\n"));
     }
+
+
 }

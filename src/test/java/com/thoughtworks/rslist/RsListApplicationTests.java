@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -61,5 +62,25 @@ class RsListApplicationTests {
         mockMvc.perform(get("/rs/list?end=2"))
             .andExpect(status().isOk())
             .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n"));
+    }
+
+    @Test
+    void shouldCouldAddResearch() throws Exception {
+        Research researchWithIndexFour = new Research("第四条事件", "教育");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String researchIndexFourJsonString = objectMapper.writeValueAsString(researchWithIndexFour);
+
+        mockMvc.perform(get("/rs/list"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+
+        mockMvc.perform(post("/rs/add")
+            .content(researchIndexFourJsonString)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(get("/rs/list"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n4  第四条事件  教育\n"));
     }
 }

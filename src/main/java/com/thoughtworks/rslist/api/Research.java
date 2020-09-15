@@ -6,6 +6,9 @@ public class Research {
   private String name;
   private String keyword;
 
+  public Research() {
+  }
+
   public Research(String name, String keyword) {
     this.name = name;
     this.keyword = keyword;

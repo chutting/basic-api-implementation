@@ -28,4 +28,6 @@ public class RsController {
   public Research getResearchByIndex(@PathVariable int index) {
     return rsList.get(index - 1);
   }
+
+
 }

@@ -1,5 +1,7 @@
 package com.thoughtworks.rslist.api;
 
+import java.util.Objects;
+
 public class Research {
   private String name;
   private String keyword;
@@ -28,5 +30,19 @@ public class Research {
   @Override
   public String toString() {
     return name + "  " + keyword;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Research research = (Research) o;
+    return Objects.equals(name, research.name) &&
+        Objects.equals(keyword, research.keyword);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, keyword);
   }
 }

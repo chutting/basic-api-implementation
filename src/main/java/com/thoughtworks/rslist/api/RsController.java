@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,9 +40,9 @@ public class RsController {
     return String.valueOf(result);
   }
 
-  @GetMapping("/rs/findByIndex/{index}")
-  public Research getResearchByIndex(@PathVariable int index) {
-    return rsList.get(index - 1);
+  @GetMapping("/rs/findByIndex/{id}")
+  public Research getResearchByIndex(@PathVariable int id) {
+    return rsList.get(id - 1);
   }
 
   @PostMapping("/rs/add")
@@ -52,7 +53,7 @@ public class RsController {
   }
 
 
-  @PutMapping(value = "rs/modify/{id}")
+  @PutMapping("/rs/modify/{id}")
   public void modifyResearch(@PathVariable int id, @RequestBody Research research) {
 
     Research researchWantToModified = rsList.get(id - 1);
@@ -66,5 +67,8 @@ public class RsController {
     rsList.set(id - 1, researchWantToModified);
   }
 
-
+  @DeleteMapping("/rs/delete/{id}")
+  public void deleteResearch(@PathVariable int id) {
+    rsList.remove(id - 1);
+  }
 }

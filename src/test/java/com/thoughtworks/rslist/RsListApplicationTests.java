@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,10 +37,8 @@ class RsListApplicationTests {
         Research researchWithIndexOne = new Research("第一条事件", "经济");
         Research researchWithIndexThree = new Research("第三条事件", "娱乐");
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        String researchIndexOneJsonString = objectMapper.writeValueAsString(researchWithIndexOne);
-        String researchIndexThreeJsonString = objectMapper.writeValueAsString(researchWithIndexThree);
+        String researchIndexOneJsonString = convertResearchToJsonString(researchWithIndexOne);
+        String researchIndexThreeJsonString = convertResearchToJsonString(researchWithIndexThree);
 
         mockMvc.perform(get("/rs/findByIndex/1").contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -68,8 +67,7 @@ class RsListApplicationTests {
     @Test
     void shouldCouldAddResearch() throws Exception {
         Research researchWithIndexFour = new Research("第四条事件", "教育");
-        ObjectMapper objectMapper = new ObjectMapper();
-        String researchIndexFourJsonString = objectMapper.writeValueAsString(researchWithIndexFour);
+        String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
 
         mockMvc.perform(get("/rs/list"))
             .andExpect(status().isOk())
@@ -91,33 +89,48 @@ class RsListApplicationTests {
         Research researchWithIndexTwoModified = new Research("经过修改后的第二条事件", "");
         Research researchWithIndexThreeModified = new Research("", "军事");
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String researchIndexOneJsonStringModified = objectMapper.writeValueAsString(researchWithIndexOneModified);
-        String researchIndexTwoJsonStringModified = objectMapper.writeValueAsString(researchWithIndexTwoModified);
-        String researchIndexThreeJsonStringModified = objectMapper.writeValueAsString(researchWithIndexThreeModified);
+        String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified);
+        String researchIndexTwoJsonStringModified = convertResearchToJsonString(researchWithIndexTwoModified);
+        String researchIndexThreeJsonStringModified = convertResearchToJsonString(researchWithIndexThreeModified);
 
         mockMvc.perform(get("/rs/list"))
             .andExpect(status().isOk())
             .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
 
-        mockMvc.perform(put("/rs/modify/1")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(researchIndexOneJsonStringModified))
-            .andExpect(status().isOk());
+        performPut("/rs/modify/1", researchIndexOneJsonStringModified);
+        performPut("/rs/modify/2", researchIndexTwoJsonStringModified);
+        performPut("/rs/modify/3", researchIndexThreeJsonStringModified);
 
-        mockMvc.perform(put("/rs/modify/2")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(researchIndexTwoJsonStringModified))
-            .andExpect(status().isOk());
-
-        mockMvc.perform(put("/rs/modify/3")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(researchIndexThreeJsonStringModified))
-            .andExpect(status().isOk());
 
         mockMvc.perform(get("/rs/list"))
             .andExpect(status().isOk())
             .andExpect(content().string("1  经过修改后的第一条事件  情感\n2  经过修改后的第二条事件  政治\n3  第三条事件  军事\n"));
+    }
+
+    private void performPut(String url, String jsonString) throws Exception {
+        mockMvc.perform(put(url)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(jsonString))
+            .andExpect(status().isOk());
+    }
+
+    private String convertResearchToJsonString(Research research) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(research);
+    }
+
+    @Test
+    void shouldCouldDeleteByIndex() throws Exception {
+        mockMvc.perform(get("/rs/list"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+
+        mockMvc.perform(delete("/rs/delete/1"))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(get("/rs/list"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("1  第二条事件  政治\n2  第三条事件  娱乐\n"));
     }
 
 

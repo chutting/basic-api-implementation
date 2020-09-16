@@ -14,21 +14,18 @@ import javax.validation.Valid;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@JsonSerialize(using = ResearchSerialize.class)
-@JsonDeserialize(using = ResearchDeserialize.class)
 public class Research {
   private String name;
   private String keyword;
 
-//  @JsonSerialize(using = ResearchSerialize.class)
   private @Valid User user;
 
-//  @JsonIgnore
+  @JsonIgnore
   public User getUser() {
     return user;
   }
 
-//  @JsonProperty("userInfo")
+  @JsonProperty
   public void setUser(User user) {
     this.user = user;
   }

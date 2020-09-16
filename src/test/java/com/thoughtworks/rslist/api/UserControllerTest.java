@@ -84,9 +84,6 @@ class UserControllerTest {
     verifyInvalidUserFields(user);
   }
 
-
-
-
   private void verifyInvalidUserFields(User user) throws Exception {
     ObjectMapper objectMapper = new ObjectMapper();
     String userJsonString = objectMapper.writeValueAsString(user);

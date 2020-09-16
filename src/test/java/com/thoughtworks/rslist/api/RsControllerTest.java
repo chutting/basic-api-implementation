@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -151,6 +150,38 @@ public class RsControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)));
   }
+
+  @Test
+  void shouldAddNewUserWhenAddResearch() throws Exception {
+    User userA = new User("ctt", 18, "female", "a@123.com", "1234567891");
+    User userB = new User("cttClone", 19, "male", "c@123.com", "1987654321");
+
+    Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
+    Research researchWithIndexFive = new Research("第五条事件", "八卦", userA);
+    Research researchWithIndexSix = new Research("第六条事件", "科技", userB);
+
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
+    String researchIndexFiveJsonString = convertResearchToJsonString(researchWithIndexFive);
+    String researchIndexSixJsonString = convertResearchToJsonString(researchWithIndexSix);
+
+    addResearch(researchIndexFourJsonString);
+    addResearch(researchIndexFiveJsonString);
+    addResearch(researchIndexSixJsonString);
+
+    mockMvc.perform(get("/user/all"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].userName", is("ctt")))
+        .andExpect(jsonPath("$[1].userName", is("cttClone")));
+  }
+
+  private void addResearch(String researchJsonString) throws Exception {
+    mockMvc.perform(post("/rs/add")
+        .content(researchJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk());
+  }
+
 
   private void checkRsListOriginalValue() throws Exception {
     mockMvc.perform(get("/rs/list"))

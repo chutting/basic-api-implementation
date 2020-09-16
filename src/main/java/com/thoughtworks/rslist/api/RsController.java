@@ -17,13 +17,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-
 public class RsController {
   private List<Research> rsList = new ArrayList<>(
       Arrays.asList(
       new Research("第一条事件", "经济"),
       new Research("第二条事件", "政治"),
       new Research("第三条事件", "娱乐")));
+//  private UserController userController = new UserController();
 
   @GetMapping("/rs/list")
   public ResponseEntity<List<Research>> getRsList(@RequestParam(required = false) Integer start,
@@ -32,10 +32,6 @@ public class RsController {
     start = (start == null ? 1 : start);
     end = (end == null ? rsList.size() : end);
 
-//    if (start > 0 && start <= rsList.size() && end <= rsList.size() && end >= start) {
-//      List<Research> outputRsList = rsList.subList(start - 1, end);
-//      return ResponseEntity.ok(outputRsList);
-//    }
     List<Research> outputRsList = rsList.subList(start - 1, end);
     return ResponseEntity.ok(outputRsList);
   }
@@ -49,9 +45,13 @@ public class RsController {
   public void addResearch(@RequestBody String researchJsonString) throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
     Research researchWantToAdd = objectMapper.readValue(researchJsonString, Research.class);
+    User user = researchWantToAdd.getUser();
+
+    if (!UserController.showAllUsers().contains(user)) {
+      UserController.register(user);
+    }
     rsList.add(researchWantToAdd);
   }
-
 
   @PutMapping("/rs/modify/{id}")
   public void modifyResearch(@PathVariable int id, @RequestBody Research research) {

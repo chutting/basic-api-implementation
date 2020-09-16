@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 public class UserController {
-  @Valid
+
   private List<User> userList = new LinkedList<>();
 
   @PostMapping("/user/register")

@@ -12,7 +12,9 @@ import javax.validation.Valid;
 public class Research {
   private String name;
   private String keyword;
-  @Valid private User user;
+
+  @Valid
+  private User user;
 
   public Research(String name, String keyword) {
     this.name = name;

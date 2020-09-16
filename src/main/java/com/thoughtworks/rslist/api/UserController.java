@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @Data
 public class UserController {
 
-  private static List<User> userList = new LinkedList<>();
+  public static List<User> userList = new LinkedList<>();
 
   @PostMapping("/user/register")
   public static void register(@RequestBody @Valid User user) {

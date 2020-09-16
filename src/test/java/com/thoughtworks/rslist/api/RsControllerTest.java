@@ -153,8 +153,8 @@ public class RsControllerTest {
 
   @Test
   void shouldAddNewUserWhenAddResearch() throws Exception {
-    User userA = new User("ctt", 18, "female", "a@123.com", "1234567891");
-    User userB = new User("cttClone", 19, "male", "c@123.com", "1987654321");
+    User userA = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
+    User userB = new User("cttClone", 19, "male", "c@123.com", "19876543211");
 
     Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
     Research researchWithIndexFive = new Research("第五条事件", "八卦", userA);
@@ -173,6 +173,20 @@ public class RsControllerTest {
         .andExpect(jsonPath("$", hasSize(2)))
         .andExpect(jsonPath("$[0].userName", is("ctt")))
         .andExpect(jsonPath("$[1].userName", is("cttClone")));
+  }
+
+  @Test
+  void shouldFailWhenUserFieldInvalidWhenAddResearch() throws Exception {
+    User userA = new User("ctt", 200, "female", "a@123.com", "1234567891");
+    Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
+
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
+
+
+    mockMvc.perform(post("/rs/add")
+        .content(researchIndexFourJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isBadRequest());
   }
 
   private void addResearch(String researchJsonString) throws Exception {

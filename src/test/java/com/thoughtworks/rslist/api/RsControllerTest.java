@@ -202,6 +202,17 @@ public class RsControllerTest {
         .andExpect(jsonPath("$.error", is("invalid request param")));
   }
 
+  @Test
+  void shouldReturn400AndErrorCommentWhenIndexOutOfBounds() throws Exception {
+    mockMvc.perform(get("/rs/findByIndex/-1"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid index")));
+
+    mockMvc.perform(get("/rs/findByIndex/500"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid index")));
+  }
+
   private void addResearchShouldSuccess(String researchJsonString, String index) throws Exception {
     MvcResult mvcResult = mockMvc.perform(post("/rs/add")
         .content(researchJsonString)

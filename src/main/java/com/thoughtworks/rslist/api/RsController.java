@@ -1,6 +1,6 @@
 package com.thoughtworks.rslist.api;
 
-import com.thoughtworks.rslist.exception.RequestParamOutOfBoundException;
+import com.thoughtworks.rslist.exceptions.RequestParamOutOfBoundsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +32,7 @@ public class RsController {
     end = (end == null ? rsList.size() : end);
 
     if (start < 1 || start > end || end > rsList.size()) {
-      throw new RequestParamOutOfBoundException();
+      throw new RequestParamOutOfBoundsException();
     }
 
     List<Research> outputRsList = rsList.subList(start - 1, end);
@@ -42,6 +42,9 @@ public class RsController {
 
   @GetMapping("/rs/findByIndex/{id}")
   public ResponseEntity<Research> getResearchByIndex(@PathVariable int id) {
+    if (id < 1 || id > rsList.size()) {
+      throw new IndexOutOfBoundsException();
+    }
     return ResponseEntity.ok(rsList.get(id - 1));
   }
 

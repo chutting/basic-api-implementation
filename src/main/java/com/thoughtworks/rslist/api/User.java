@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -27,6 +28,8 @@ public class User {
 
   @NotEmpty
   private String gender;
+
+  @Email
   private String email;
   private String phoneNumber;
 }

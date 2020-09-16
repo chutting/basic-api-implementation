@@ -56,6 +56,13 @@ class UserControllerTest {
     verifyInvalidUserFields(user);
   }
 
+  @Test
+  void email_length_should_not_be_valid() throws Exception {
+    User user = new User("1234567", 18, "female", "athoughtworks.com", "18888888888");
+
+    verifyInvalidUserFields(user);
+  }
+
 
 
 

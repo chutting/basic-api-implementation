@@ -182,7 +182,6 @@ public class RsControllerTest {
 
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
 
-
     mockMvc.perform(post("/rs/add")
         .content(researchIndexFourJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))

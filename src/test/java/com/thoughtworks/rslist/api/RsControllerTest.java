@@ -11,7 +11,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,12 +41,12 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/findByIndex/1").contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name", is("第一条事件")))
-        .andExpect(jsonPath("$.user.user_name", is("ctt")));
+        .andExpect(jsonPath("$", not(hasKey("user"))));
 
     mockMvc.perform(get("/rs/findByIndex/3").contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name", is("第三条事件")))
-        .andExpect(jsonPath("$.user.user_name", is("cT")));
+        .andExpect(jsonPath("$", not(hasKey("user"))));
   }
 
   @Test
@@ -52,9 +54,9 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/list?start=2&end=3"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第二条事件")))
-        .andExpect(jsonPath("$[0].user.user_name", is("cttClone")))
+        .andExpect(jsonPath("$[0]", not(hasKey("user"))))
         .andExpect(jsonPath("$[1].name", is("第三条事件")))
-        .andExpect(jsonPath("$[1].user.user_name", is("cT")));
+        .andExpect(jsonPath("$[1]", not(hasKey("user"))));
   }
 
   @Test
@@ -63,9 +65,9 @@ public class RsControllerTest {
         .andExpect(status().isOk())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第二条事件")))
-        .andExpect(jsonPath("$[0].user.user_name", is("cttClone")))
+        .andExpect(jsonPath("$[0]", not(hasKey("user"))))
         .andExpect(jsonPath("$[1].name", is("第三条事件")))
-        .andExpect(jsonPath("$[1].user.user_name", is("cT")));
+        .andExpect(jsonPath("$[1]", not(hasKey("user"))));
   }
 
   @Test
@@ -74,9 +76,9 @@ public class RsControllerTest {
         .andExpect(status().isOk())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第一条事件")))
-        .andExpect(jsonPath("$[0].user.user_name", is("ctt")))
+        .andExpect(jsonPath("$[0]", not(hasKey("user"))))
         .andExpect(jsonPath("$[1].name", is("第二条事件")))
-        .andExpect(jsonPath("$[1].user.user_name", is("cttClone")));
+        .andExpect(jsonPath("$[1]", not(hasKey("user"))));
   }
 
   @Test
@@ -159,9 +161,9 @@ public class RsControllerTest {
     Research researchWithIndexFive = new Research("第五条事件", "八卦", userA);
     Research researchWithIndexSix = new Research("第六条事件", "科技", userB);
 
-    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
-    String researchIndexFiveJsonString = convertResearchToJsonString(researchWithIndexFive);
-    String researchIndexSixJsonString = convertResearchToJsonString(researchWithIndexSix);
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, userA);
+    String researchIndexFiveJsonString = convertResearchToJsonString(researchWithIndexFive, userA);
+    String researchIndexSixJsonString = convertResearchToJsonString(researchWithIndexSix, userB);
 
     addResearchShouldSuccess(researchIndexFourJsonString, "4");
     addResearchShouldSuccess(researchIndexFiveJsonString, "5");
@@ -179,7 +181,7 @@ public class RsControllerTest {
     User userA = new User("ctt", 200, "female", "a@123.com", "1234567891");
     Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
 
-    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, userA);
 
     mockMvc.perform(post("/rs/add")
         .content(researchIndexFourJsonString)
@@ -218,7 +220,7 @@ public class RsControllerTest {
     User user = new User("ctt", 200, "female", "a@123.com", "1234567891");
     Research researchWithIndexFour = new Research("第四条事件", "教育", user);
 
-    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
 
     mockMvc.perform(post("/rs/add")
         .content(researchIndexFourJsonString)
@@ -243,11 +245,11 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第一条事件")))
-        .andExpect(jsonPath("$[0].user.user_name", is("ctt")))
+        .andExpect(jsonPath("$[0]", not(hasKey("user"))))
         .andExpect(jsonPath("$[1].name", is("第二条事件")))
-        .andExpect(jsonPath("$[1].user.user_name", is("cttClone")))
+        .andExpect(jsonPath("$[1]", not(hasKey("user"))))
         .andExpect(jsonPath("$[2].name", is("第三条事件")))
-        .andExpect(jsonPath("$[2].user.user_name", is("cT")));
+        .andExpect(jsonPath("$[2]", not(hasKey("user"))));
   }
 
   private void performPut(String url, String jsonString) throws Exception {
@@ -257,8 +259,20 @@ public class RsControllerTest {
         .andExpect(status().isOk());
   }
 
+  private String convertResearchToJsonString(Research research, User user) throws Exception {
+    ObjectMapper objectMapper = new ObjectMapper();
+    String jsonString = objectMapper.writeValueAsString(research);
+
+    StringBuilder stringBuilder =new StringBuilder(jsonString.substring(0, jsonString.length() - 1));
+    String userJson = objectMapper.writeValueAsString(user);
+    StringBuilder output = stringBuilder.append(",\"user\":").append(userJson).append("}");
+    return output.toString();
+  }
+
   private String convertResearchToJsonString(Research research) throws Exception {
     ObjectMapper objectMapper = new ObjectMapper();
-    return objectMapper.writeValueAsString(research);
+    String jsonString = objectMapper.writeValueAsString(research);
+
+    return jsonString;
   }
 }

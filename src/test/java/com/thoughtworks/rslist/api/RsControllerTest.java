@@ -9,11 +9,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -31,42 +34,54 @@ public class RsControllerTest {
 
   @Test
   void shouldGetResearchByIndex() throws Exception {
-    Research researchWithIndexOne = new Research("第一条事件", "经济");
-    Research researchWithIndexThree = new Research("第三条事件", "娱乐");
-
-    String researchIndexOneJsonString = convertResearchToJsonString(researchWithIndexOne);
-    String researchIndexThreeJsonString = convertResearchToJsonString(researchWithIndexThree);
 
     mockMvc.perform(get("/rs/findByIndex/1").contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk())
-        .andExpect(content().json(researchIndexOneJsonString));
+        .andExpect(jsonPath("$.name", is("第一条事件")))
+        .andExpect(jsonPath("$.keyword", is("经济")));
 
     mockMvc.perform(get("/rs/findByIndex/3").contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk())
-        .andExpect(content().json(researchIndexThreeJsonString));
+        .andExpect(jsonPath("$.name", is("第三条事件")))
+        .andExpect(jsonPath("$.keyword", is("娱乐")));
   }
 
   @Test
   void shouldGetResearchListStringByStartIndexAndEndIndex() throws Exception {
     mockMvc.perform(get("/rs/list?start=2&end=3"))
         .andExpect(status().isOk())
-        .andExpect(content().string("1  第二条事件  政治\n2  第三条事件  娱乐\n"));
+        .andExpect(jsonPath("$[0].name", is("第二条事件")))
+        .andExpect(jsonPath("$[0].keyword", is("政治")))
+        .andExpect(jsonPath("$[1].name", is("第三条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("娱乐")));
+  }
 
+  @Test
+  void shouldGetResearchListStringByStartIndex() throws Exception {
     mockMvc.perform(get("/rs/list?start=2"))
         .andExpect(status().isOk())
-        .andExpect(content().string("1  第二条事件  政治\n2  第三条事件  娱乐\n"));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].name", is("第二条事件")))
+        .andExpect(jsonPath("$[0].keyword", is("政治")))
+        .andExpect(jsonPath("$[1].name", is("第三条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("娱乐")));
+  }
 
+  @Test
+  void shouldGetResearchListStringByEndIndex() throws Exception {
     mockMvc.perform(get("/rs/list?end=2"))
         .andExpect(status().isOk())
-        .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n"));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].name", is("第一条事件")))
+        .andExpect(jsonPath("$[0].keyword", is("经济")))
+        .andExpect(jsonPath("$[1].name", is("第二条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("政治")));
   }
 
   @Test
   void shouldCouldAddResearch() throws Exception {
     Research researchWithIndexFour = new Research("第四条事件", "教育");
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
-
-    checkRsListOriginalValue();
 
     mockMvc.perform(post("/rs/add")
         .content(researchIndexFourJsonString)
@@ -75,47 +90,77 @@ public class RsControllerTest {
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n4  第四条事件  教育\n"));
+        .andExpect(jsonPath("$[3].name", is("第四条事件")))
+        .andExpect(jsonPath("$[3].keyword", is("教育")));
   }
 
   @Test
-  void shouldCouldModifyResearchByIndex() throws Exception {
+  void shouldCouldModifyResearchNameAndKeywordByIndex() throws Exception {
     Research researchWithIndexOneModified = new Research("经过修改后的第一条事件", "情感");
-    Research researchWithIndexTwoModified = new Research("经过修改后的第二条事件", "");
-    Research researchWithIndexThreeModified = new Research("", "军事");
 
     String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified);
-    String researchIndexTwoJsonStringModified = convertResearchToJsonString(researchWithIndexTwoModified);
-    String researchIndexThreeJsonStringModified = convertResearchToJsonString(researchWithIndexThreeModified);
 
     checkRsListOriginalValue();
 
     performPut("/rs/modify/1", researchIndexOneJsonStringModified);
-    performPut("/rs/modify/2", researchIndexTwoJsonStringModified);
-    performPut("/rs/modify/3", researchIndexThreeJsonStringModified);
-
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(content().string("1  经过修改后的第一条事件  情感\n2  经过修改后的第二条事件  政治\n3  第三条事件  军事\n"));
+        .andExpect(jsonPath("$[0].name", is("经过修改后的第一条事件")))
+        .andExpect(jsonPath("$[0].keyword", is("情感")));
+  }
+
+  @Test
+  void shouldCouldModifyResearchNameByIndex() throws Exception {
+    Research researchWithIndexTwoModified = new Research("经过修改后的第二条事件", "");
+
+    String researchIndexTwoJsonStringModified = convertResearchToJsonString(researchWithIndexTwoModified);
+
+    performPut("/rs/modify/2", researchIndexTwoJsonStringModified);
+
+    mockMvc.perform(get("/rs/list"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[1].name", is("经过修改后的第二条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("政治")));
+  }
+
+  @Test
+  void shouldCouldModifyResearchKeywordByIndex() throws Exception {
+    Research researchWithIndexThreeModified = new Research("", "军事");
+
+    String researchIndexThreeJsonStringModified = convertResearchToJsonString(researchWithIndexThreeModified);
+
+    performPut("/rs/modify/3", researchIndexThreeJsonStringModified);
+
+    mockMvc.perform(get("/rs/list"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[2].name", is("第三条事件")))
+        .andExpect(jsonPath("$[2].keyword", is("军事")));
   }
 
   @Test
   void shouldCouldDeleteByIndex() throws Exception {
-    checkRsListOriginalValue();
+    mockMvc.perform(get("/rs/list"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(3)));
 
     mockMvc.perform(delete("/rs/delete/1"))
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(content().string("1  第二条事件  政治\n2  第三条事件  娱乐\n"));
+        .andExpect(jsonPath("$", hasSize(2)));
   }
 
   private void checkRsListOriginalValue() throws Exception {
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(content().string("1  第一条事件  经济\n2  第二条事件  政治\n3  第三条事件  娱乐\n"));
+        .andExpect(jsonPath("$[0].name", is("第一条事件")))
+        .andExpect(jsonPath("$[0].keyword", is("经济")))
+        .andExpect(jsonPath("$[1].name", is("第二条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("政治")))
+        .andExpect(jsonPath("$[2].name", is("第三条事件")))
+        .andExpect(jsonPath("$[2].keyword", is("娱乐")));
   }
 
   private void performPut(String url, String jsonString) throws Exception {

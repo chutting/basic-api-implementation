@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
+
 public class RsController {
   private List<Research> rsList = new ArrayList<>(
       Arrays.asList(
@@ -24,19 +26,18 @@ public class RsController {
       new Research("第三条事件", "娱乐")));
 
   @GetMapping("/rs/list")
-  public String getRsList(@RequestParam(required = false) Integer start,
-                          @RequestParam(required = false) Integer end) {
+  public ResponseEntity<List<Research>> getRsList(@RequestParam(required = false) Integer start,
+                                  @RequestParam(required = false) Integer end) {
+
     start = (start == null ? 1 : start);
     end = (end == null ? rsList.size() : end);
 
-    StringBuilder result = new StringBuilder();
+//    if (start > 0 && start <= rsList.size() && end <= rsList.size() && end >= start) {
+//      List<Research> outputRsList = rsList.subList(start - 1, end);
+//      return ResponseEntity.ok(outputRsList);
+//    }
     List<Research> outputRsList = rsList.subList(start - 1, end);
-
-    for (int index = 0; index < outputRsList.size(); index++) {
-      result.append(index + 1).append("  ").append(outputRsList.get(index).toString()).append("\n");
-    }
-
-    return String.valueOf(result);
+    return ResponseEntity.ok(outputRsList);
   }
 
   @GetMapping("/rs/findByIndex/{id}")

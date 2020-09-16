@@ -34,14 +34,14 @@ class UserControllerTest {
   }
 
   @Test
-  void gender_length_should_be_not_be_null() throws Exception {
+  void gender_should_be_not_be_null() throws Exception {
     User user = new User("1234567", 18, null, "a@thoughtworks.com", "18888888888");
 
     verifyInvalidUserFields(user);
   }
 
   @Test
-  void age_length_should_in_the_range_of_18_and_100() throws Exception {
+  void age_should_in_the_range_of_18_and_100() throws Exception {
     User youngerUser = new User("1234567", 16, "female", "a@thoughtworks.com", "18888888888");
     User olderUser = new User("1234567", 200, "female", "a@thoughtworks.com", "18888888888");
 
@@ -50,15 +50,36 @@ class UserControllerTest {
   }
 
   @Test
-  void age_length_should_not_be_null() throws Exception {
+  void age_should_not_be_null() throws Exception {
     User user = new User("1234567", null, "female", "a@thoughtworks.com", "18888888888");
 
     verifyInvalidUserFields(user);
   }
 
   @Test
-  void email_length_should_not_be_valid() throws Exception {
+  void email_should_be_valid() throws Exception {
     User user = new User("1234567", 18, "female", "athoughtworks.com", "18888888888");
+
+    verifyInvalidUserFields(user);
+  }
+
+  @Test
+  void phone_first_number_should_be_1() throws Exception {
+    User user = new User("1234567", 18, "female", "a@thoughtworks.com", "28888888888");
+
+    verifyInvalidUserFields(user);
+  }
+
+  @Test
+  void phone_should_not_be_null() throws Exception {
+    User user = new User("1234567", 18, "female", "a@thoughtworks.com", null);
+
+    verifyInvalidUserFields(user);
+  }
+
+  @Test
+  void phone_number_should_be_11_digits() throws Exception {
+    User user = new User("1234567", 18, "female", "a@thoughtworks.com", "188880888888");
 
     verifyInvalidUserFields(user);
   }

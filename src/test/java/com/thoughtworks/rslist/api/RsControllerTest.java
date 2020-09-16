@@ -213,6 +213,20 @@ public class RsControllerTest {
         .andExpect(jsonPath("$.error", is("invalid index")));
   }
 
+  @Test
+  void shouldReturn400AndErrorCommentWhenResearchUserNotValid() throws Exception {
+    User user = new User("ctt", 200, "female", "a@123.com", "1234567891");
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
+
+    mockMvc.perform(post("/rs/add")
+        .content(researchIndexFourJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid param")));
+  }
+
   private void addResearchShouldSuccess(String researchJsonString, String index) throws Exception {
     MvcResult mvcResult = mockMvc.perform(post("/rs/add")
         .content(researchJsonString)

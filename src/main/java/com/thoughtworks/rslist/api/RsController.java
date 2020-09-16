@@ -1,8 +1,14 @@
 package com.thoughtworks.rslist.api;
 
+import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.exceptions.RequestParamOutOfBoundsException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
+@Slf4j
 public class RsController {
+  Logger logger = LogManager.getLogger(getClass());
   private List<Research> rsList = new ArrayList<>(
       Arrays.asList(
       new Research("第一条事件", "经济", new User("ctt", 18, "female", "a@thoughtworks.com", "12345678901")),
@@ -68,6 +76,13 @@ public class RsController {
     }
 
     rsList.set(id - 1, researchWantToModified);
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity handleAddArgumentNotValidException(Exception e) {
+    ErrorComment errorComment = new ErrorComment("invalid param");
+    logger.error(errorComment.getError());
+    return ResponseEntity.badRequest().body(errorComment);
   }
 
   @DeleteMapping("/rs/delete/{id}")

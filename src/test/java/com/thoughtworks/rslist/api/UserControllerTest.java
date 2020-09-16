@@ -126,6 +126,19 @@ class UserControllerTest {
         .andExpect(jsonPath("$[1].user_name", is("cttClone")));
   }
 
+  @Test
+  void should_return_400_and_error_comment_when_user_argument_not_valid() throws Exception{
+    User user = new User(null, 20, "male", "c@thoughtworks.com", "18888888818");
+    ObjectMapper objectMapper = new ObjectMapper();
+    String userJsonString = objectMapper.writeValueAsString(user);
+
+    mockMvc.perform(post("/user/register")
+        .content(userJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid user")));
+  }
+
   private void verifyInvalidUserFields(User user) throws Exception {
     ObjectMapper objectMapper = new ObjectMapper();
     String userJsonString = objectMapper.writeValueAsString(user);

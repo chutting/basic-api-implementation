@@ -15,14 +15,18 @@ import java.util.List;
 public class UserController {
 
   public static List<User> userList = new LinkedList<>();
+  //代价：UserController中不同的test会互相影响
 
   @PostMapping("/user/register")
   public static ResponseEntity register(@RequestBody @Valid User user) {
-    userList.add(user);
-    return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
+    if (!userList.contains(user)) {
+      userList.add(user);
+      return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
+    }
+    return ResponseEntity.badRequest().build();
   }
 
-  @GetMapping("/user/all")
+  @GetMapping("/users")
   public static ResponseEntity<List<User>> showAllUsers() {
     return ResponseEntity.ok(userList);
   }

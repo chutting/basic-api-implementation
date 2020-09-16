@@ -10,8 +10,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -101,6 +105,25 @@ class UserControllerTest {
     User user = new User("1234567", 18, "female", "a@thoughtworks.com", "188880888888");
 
     verifyInvalidUserFields(user);
+  }
+
+  @Test
+  void should_get_all_users_list() throws Exception {
+    User userB = new User("cttClone", 20, "male", "c@thoughtworks.com", "18888888818");
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String userBJsonString = objectMapper.writeValueAsString(userB);
+
+    mockMvc.perform(post("/user/register")
+        .content(userBJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isCreated());
+
+    mockMvc.perform(get("/users"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].user_name", is("ctt")))
+        .andExpect(jsonPath("$[1].user_name", is("cttClone")));
   }
 
   private void verifyInvalidUserFields(User user) throws Exception {

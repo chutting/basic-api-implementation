@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.api;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +19,9 @@ import java.util.List;
 public class RsController {
   private List<Research> rsList = new ArrayList<>(
       Arrays.asList(
-      new Research("第一条事件", "经济"),
-      new Research("第二条事件", "政治"),
-      new Research("第三条事件", "娱乐")));
+      new Research("第一条事件", "经济", new User("ctt", 18, "female", "a@thoughtworks.com", "12345678901")),
+      new Research("第二条事件", "政治", new User("cttClone", 20, "male", "b@thoughtworks.com", "11345678901")),
+      new Research("第三条事件", "娱乐", new User("cT", 88, "male", "c@thoughtworks.com", "14345678901"))));
 
   @GetMapping("/rs/list")
   public ResponseEntity<List<Research>> getRsList(@RequestParam(required = false) Integer start,
@@ -43,9 +42,7 @@ public class RsController {
   @PostMapping("/rs/add")
   public ResponseEntity addResearch(@RequestBody @Valid Research research) {
     User user = research.getUser();
-    if (!UserController.userList.contains(user)) {
-      UserController.register(user);
-    }
+    UserController.register(user);
     rsList.add(research);
     return ResponseEntity.created(null).header("index", String.valueOf(rsList.size())).build();
   }

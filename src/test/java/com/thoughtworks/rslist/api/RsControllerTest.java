@@ -39,12 +39,12 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/findByIndex/1").contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name", is("第一条事件")))
-        .andExpect(jsonPath("$.keyword", is("经济")));
+        .andExpect(jsonPath("$.user.user_name", is("ctt")));
 
     mockMvc.perform(get("/rs/findByIndex/3").contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name", is("第三条事件")))
-        .andExpect(jsonPath("$.keyword", is("娱乐")));
+        .andExpect(jsonPath("$.user.user_name", is("cT")));
   }
 
   @Test
@@ -52,9 +52,9 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/list?start=2&end=3"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第二条事件")))
-        .andExpect(jsonPath("$[0].keyword", is("政治")))
+        .andExpect(jsonPath("$[0].user.user_name", is("cttClone")))
         .andExpect(jsonPath("$[1].name", is("第三条事件")))
-        .andExpect(jsonPath("$[1].keyword", is("娱乐")));
+        .andExpect(jsonPath("$[1].user.user_name", is("cT")));
   }
 
   @Test
@@ -63,9 +63,9 @@ public class RsControllerTest {
         .andExpect(status().isOk())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第二条事件")))
-        .andExpect(jsonPath("$[0].keyword", is("政治")))
+        .andExpect(jsonPath("$[0].user.user_name", is("cttClone")))
         .andExpect(jsonPath("$[1].name", is("第三条事件")))
-        .andExpect(jsonPath("$[1].keyword", is("娱乐")));
+        .andExpect(jsonPath("$[1].user.user_name", is("cT")));
   }
 
   @Test
@@ -74,9 +74,9 @@ public class RsControllerTest {
         .andExpect(status().isOk())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第一条事件")))
-        .andExpect(jsonPath("$[0].keyword", is("经济")))
+        .andExpect(jsonPath("$[0].user.user_name", is("ctt")))
         .andExpect(jsonPath("$[1].name", is("第二条事件")))
-        .andExpect(jsonPath("$[1].keyword", is("政治")));
+        .andExpect(jsonPath("$[1].user.user_name", is("cttClone")));
   }
 
   @Test
@@ -167,11 +167,11 @@ public class RsControllerTest {
     addResearchShouldSuccess(researchIndexFiveJsonString, "5");
     addResearchShouldSuccess(researchIndexSixJsonString, "6");
 
-    mockMvc.perform(get("/user/all"))
+    mockMvc.perform(get("/users"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)))
-        .andExpect(jsonPath("$[0].userName", is("ctt")))
-        .andExpect(jsonPath("$[1].userName", is("cttClone")));
+        .andExpect(jsonPath("$[0].user_name", is("ctt")))
+        .andExpect(jsonPath("$[1].user_name", is("cttClone")));
   }
 
   @Test
@@ -205,11 +205,11 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第一条事件")))
-        .andExpect(jsonPath("$[0].keyword", is("经济")))
+        .andExpect(jsonPath("$[0].user.user_name", is("ctt")))
         .andExpect(jsonPath("$[1].name", is("第二条事件")))
-        .andExpect(jsonPath("$[1].keyword", is("政治")))
+        .andExpect(jsonPath("$[1].user.user_name", is("cttClone")))
         .andExpect(jsonPath("$[2].name", is("第三条事件")))
-        .andExpect(jsonPath("$[2].keyword", is("娱乐")));
+        .andExpect(jsonPath("$[2].user.user_name", is("cT")));
   }
 
   private void performPut(String url, String jsonString) throws Exception {

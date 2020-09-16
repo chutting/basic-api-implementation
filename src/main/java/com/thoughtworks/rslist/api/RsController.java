@@ -47,7 +47,7 @@ public class RsController {
       UserController.register(user);
     }
     rsList.add(research);
-    return ResponseEntity.created(null).build();
+    return ResponseEntity.created(null).header("index", String.valueOf(rsList.size())).build();
   }
 
   @PutMapping("/rs/modify/{id}")

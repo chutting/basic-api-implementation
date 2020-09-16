@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,6 +20,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
   @Autowired
   MockMvc mockMvc;
+
+  @Test
+  void validUserShouldRegisterSuccessfully() throws Exception {
+    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "18888888888");
+    ObjectMapper objectMapper = new ObjectMapper();
+    String userJsonString = objectMapper.writeValueAsString(user);
+    MvcResult mvcResult = mockMvc.perform(post("/user/register")
+        .content(userJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andReturn();
+
+    int status = mvcResult.getResponse().getStatus();
+    String responseIndex = mvcResult.getResponse().getHeader("index");
+
+    assertEquals(201, status);
+    assertEquals("1", responseIndex);
+  }
 
   @Test
   void username_should_be_not_be_null() throws Exception {

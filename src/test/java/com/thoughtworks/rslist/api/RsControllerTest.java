@@ -8,9 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -82,7 +84,7 @@ public class RsControllerTest {
     Research researchWithIndexFour = new Research("第四条事件", "教育");
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
 
-    addResearch(researchIndexFourJsonString);
+    addResearchShouldSuccess(researchIndexFourJsonString, "4");
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
@@ -161,9 +163,9 @@ public class RsControllerTest {
     String researchIndexFiveJsonString = convertResearchToJsonString(researchWithIndexFive);
     String researchIndexSixJsonString = convertResearchToJsonString(researchWithIndexSix);
 
-    addResearch(researchIndexFourJsonString);
-    addResearch(researchIndexFiveJsonString);
-    addResearch(researchIndexSixJsonString);
+    addResearchShouldSuccess(researchIndexFourJsonString, "4");
+    addResearchShouldSuccess(researchIndexFiveJsonString, "5");
+    addResearchShouldSuccess(researchIndexSixJsonString, "6");
 
     mockMvc.perform(get("/user/all"))
         .andExpect(status().isOk())
@@ -187,11 +189,16 @@ public class RsControllerTest {
 
 
 
-  private void addResearch(String researchJsonString) throws Exception {
-    mockMvc.perform(post("/rs/add")
+  private void addResearchShouldSuccess(String researchJsonString, String index) throws Exception {
+    MvcResult mvcResult = mockMvc.perform(post("/rs/add")
         .content(researchJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isCreated());
+        .andReturn();
+    int status = mvcResult.getResponse().getStatus();
+    String responseIndex = mvcResult.getResponse().getHeader("index");
+
+    assertEquals(201, status);
+    assertEquals(index, responseIndex);
   }
 
   private void checkRsListOriginalValue() throws Exception {

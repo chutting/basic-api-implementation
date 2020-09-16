@@ -40,6 +40,22 @@ class UserControllerTest {
     verifyInvalidUserFields(user);
   }
 
+  @Test
+  void age_length_should_in_the_range_of_18_and_100() throws Exception {
+    User youngerUser = new User("1234567", 16, "female", "a@thoughtworks.com", "18888888888");
+    User olderUser = new User("1234567", 200, "female", "a@thoughtworks.com", "18888888888");
+
+    verifyInvalidUserFields(youngerUser);
+    verifyInvalidUserFields(olderUser);
+  }
+
+  @Test
+  void age_length_should_not_be_null() throws Exception {
+    User user = new User("1234567", null, "female", "a@thoughtworks.com", "18888888888");
+
+    verifyInvalidUserFields(user);
+  }
+
 
 
 

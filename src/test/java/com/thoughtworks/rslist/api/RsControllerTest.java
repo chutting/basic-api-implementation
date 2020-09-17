@@ -83,8 +83,10 @@ public class RsControllerTest {
 
   @Test
   void shouldCouldAddResearch() throws Exception {
-    Research researchWithIndexFour = new Research("第四条事件", "教育");
-    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour);
+    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
+
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
 
     addResearchShouldSuccess(researchIndexFourJsonString, "4");
 
@@ -96,9 +98,10 @@ public class RsControllerTest {
 
   @Test
   void shouldCouldModifyResearchNameAndKeywordByIndex() throws Exception {
-    Research researchWithIndexOneModified = new Research("经过修改后的第一条事件", "情感");
+    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
+    Research researchWithIndexOneModified = new Research("经过修改后的第一条事件", "情感", user);
 
-    String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified);
+    String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified, user);
 
     checkRsListOriginalValue();
 
@@ -112,9 +115,10 @@ public class RsControllerTest {
 
   @Test
   void shouldCouldModifyResearchNameByIndex() throws Exception {
-    Research researchWithIndexTwoModified = new Research("经过修改后的第二条事件", "");
+    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
+    Research researchWithIndexTwoModified = new Research("经过修改后的第二条事件", "", user);
 
-    String researchIndexTwoJsonStringModified = convertResearchToJsonString(researchWithIndexTwoModified);
+    String researchIndexTwoJsonStringModified = convertResearchToJsonString(researchWithIndexTwoModified, user);
 
     performPut("/rs/modify/2", researchIndexTwoJsonStringModified);
 
@@ -126,9 +130,10 @@ public class RsControllerTest {
 
   @Test
   void shouldCouldModifyResearchKeywordByIndex() throws Exception {
-    Research researchWithIndexThreeModified = new Research("", "军事");
+    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
+    Research researchWithIndexThreeModified = new Research("", "军事", user);
 
-    String researchIndexThreeJsonStringModified = convertResearchToJsonString(researchWithIndexThreeModified);
+    String researchIndexThreeJsonStringModified = convertResearchToJsonString(researchWithIndexThreeModified, user);
 
     performPut("/rs/modify/3", researchIndexThreeJsonStringModified);
 

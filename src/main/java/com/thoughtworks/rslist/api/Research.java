@@ -10,14 +10,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class Research {
+  @NotEmpty
   private String name;
+
+  @NotEmpty
   private String keyword;
 
+  @NotNull
   private @Valid User user;
 
   @JsonIgnore

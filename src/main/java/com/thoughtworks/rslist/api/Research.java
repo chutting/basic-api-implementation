@@ -20,6 +20,13 @@ public class Research {
 //  public interface WithoutUserView {};
 //  public interface WithUserView extends WithoutUserView {};
 
+
+  public Research(@NotEmpty String name, @NotEmpty String keyword, @NotNull @Valid User user) {
+    this.name = name;
+    this.keyword = keyword;
+    this.user = user;
+  }
+
   @NotEmpty
 //  @JsonView(WithoutUserView.class)
   private String name;
@@ -31,6 +38,8 @@ public class Research {
   @NotNull
 //  @JsonView(WithUserView.class)
   private @Valid User user;
+
+  private Integer voteNum;
 
   @JsonProperty
   public User getUser() {

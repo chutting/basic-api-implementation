@@ -254,14 +254,33 @@ public class RsControllerTest {
     mockMvc.perform(post("/rs/vote/2")
         .content(voteJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isOk());
+        .andExpect(status().isCreated());
 
     String secondVoteJsonString = "{\"voteNum\": \"6\"," +
         "                  \"userId\": " + userEntity.getId() + "," +
         "                  \"voteTime\": \"current time\"" +"}";
 
-    mockMvc.perform(post("/rs/vote/1")
+    mockMvc.perform(post("/rs/vote/3")
         .content(secondVoteJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void shouldVoteFailedWhenResearchIdNotExist() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    UserEntity userEntity = userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    String voteJsonString = "{\"voteNum\": \"5\"," +
+        "                  \"userId\": " + userEntity.getId() + "," +
+        "                  \"voteTime\": \"current time\"" +"}";
+
+    mockMvc.perform(post("/rs/vote/10")
+        .content(voteJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
   }

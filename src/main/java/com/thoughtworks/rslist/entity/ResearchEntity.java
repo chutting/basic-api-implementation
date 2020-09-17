@@ -35,19 +35,12 @@ public class ResearchEntity {
   @Column(name = "name")
   private String eventName;
 
+  @Column(name = "vote_num")
+  @Builder.Default
+  private Integer voteNum = 0;
+
   private String keyword;
 
   @JoinColumn(name = "user_id")
   private Integer userId;
-//  private UserEntity userEntity;
-//
-//  @JsonIgnore
-//  public UserEntity getUserEntity() {
-//    return userEntity;
-//  }
-//
-//  @JsonProperty
-//  public void setUserEntity(UserEntity userEntity) {
-//    this.userEntity = userEntity;
-//  }
 }

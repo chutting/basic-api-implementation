@@ -39,7 +39,6 @@ public class RsController {
   private final ResearchService researchService;
   private final VoteService voteService;
 
-
   Logger logger = LogManager.getLogger(getClass());
   private List<Research> rsList = new ArrayList<>(
       Arrays.asList(
@@ -101,7 +100,11 @@ public class RsController {
   public ResponseEntity vote(@PathVariable int rsEventId,
                              @RequestBody Map<String, String> voteJsonMap) {
 
-    boolean isVoteSuccess = userService.vote(Integer.parseInt(voteJsonMap.get("userId")), Integer.parseInt(voteJsonMap.get("voteNum")));
+    boolean isVoteSuccess = userService.vote(
+        Integer.parseInt(voteJsonMap.get("userId")),
+        Integer.parseInt(voteJsonMap.get("voteNum")),
+        rsEventId);
+
     if (isVoteSuccess) {
       VoteEntity newVoteEntity = VoteEntity.builder()
           .rsEventId(rsEventId)
@@ -110,7 +113,7 @@ public class RsController {
           .voteTime(voteJsonMap.get("voteTime"))
           .build();
       voteService.addVoteRecord(newVoteEntity);
-      return ResponseEntity.ok().build();
+      return ResponseEntity.created(null).build();
     }
     return ResponseEntity.badRequest().build();
   }

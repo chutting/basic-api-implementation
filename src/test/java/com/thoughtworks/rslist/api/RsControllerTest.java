@@ -1,6 +1,10 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.Repo.ResearchRepo;
+import com.thoughtworks.rslist.Repo.UserRepo;
+import com.thoughtworks.rslist.entity.UserEntity;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,8 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.io.ByteArrayOutputStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -28,9 +30,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class RsControllerTest {
+  @Autowired
+  UserRepo userRepo;
+  @Autowired
+  ResearchRepo researchRepo;
 
   @Autowired
   MockMvc mockMvc;
+
+//  public RsControllerTest(UserRepo userRepo, ResearchRepo researchRepo) {
+//    this.userRepo = userRepo;
+//    this.researchRepo = researchRepo;
+//  }
+
+  @BeforeEach
+  void deleteAllInDataBase() {
+    userRepo.deleteAll();
+    researchRepo.deleteAll();
+  }
 
   @Test
   void shouldGetRsListString() throws Exception {
@@ -84,18 +101,52 @@ public class RsControllerTest {
   }
 
   @Test
-  void shouldCouldAddResearch() throws Exception {
-    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
+  void shouldCouldAddResearchWhenUserExists() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(UserEntity.builder()
+        .userName(user.getUserName())
+        .age(user.getAge())
+        .gender(user.getGender())
+        .email(user.getEmail())
+        .phoneNumber(user.getPhoneNumber())
+        .build());
 
     Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
 
-    addResearchShouldSuccess(researchIndexFourJsonString, "4");
+
+    MvcResult mvcResult = mockMvc.perform(post("/rs/add")
+        .content(researchIndexFourJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andReturn();
+
+    int status = mvcResult.getResponse().getStatus();
+    String responseIndex = mvcResult.getResponse().getHeader("index");
+
+    assertEquals(201, status);
+    assertEquals("1", responseIndex);
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[3].name", is("第四条事件")))
-        .andExpect(jsonPath("$[3].keyword", is("教育")));
+        .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
+        .andExpect(jsonPath("$[0].keyword", is("教育")));
+  }
+
+  @Test
+  void shouldCouldNotAddResearchWhenUserNotExists() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
+
+
+    mockMvc.perform(post("/rs/add")
+        .content(researchIndexFourJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isBadRequest());
+
   }
 
   @Test

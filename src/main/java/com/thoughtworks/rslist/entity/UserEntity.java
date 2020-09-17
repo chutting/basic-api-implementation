@@ -1,17 +1,21 @@
 package com.thoughtworks.rslist.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thoughtworks.rslist.api.Research;
 import com.thoughtworks.rslist.api.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.List;
 
 @Data
 @Entity
@@ -43,5 +47,8 @@ public class UserEntity {
 
   private String phoneNumber;
 
-  private int voteNum = 10;
+  private int voteNum;
+
+//  @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
+//  private List<ResearchEntity> researchList;
 }

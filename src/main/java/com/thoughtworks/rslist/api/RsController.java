@@ -1,13 +1,16 @@
 package com.thoughtworks.rslist.api;
 
+import com.thoughtworks.rslist.entity.ResearchEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.exceptions.RequestParamOutOfBoundsException;
+import com.thoughtworks.rslist.service.ResearchService;
 import com.thoughtworks.rslist.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +32,7 @@ import java.util.List;
 @Slf4j
 public class RsController {
   private final UserService userService;
+  private final ResearchService researchService;
 
   Logger logger = LogManager.getLogger(getClass());
   private List<Research> rsList = new ArrayList<>(
@@ -36,23 +41,26 @@ public class RsController {
       new Research("第二条事件", "政治", new User("cttClone", 20, "male", "b@thoughtworks.com", "11345678901")),
       new Research("第三条事件", "娱乐", new User("cT", 88, "male", "c@thoughtworks.com", "14345678901"))));
 
-  public RsController(UserService userService) {
+  public RsController(UserService userService, ResearchService researchService) {
     this.userService = userService;
+    this.researchService = researchService;
   }
 
 
   @GetMapping("/rs/list")
-  public ResponseEntity<List<Research>> getRsList(@RequestParam(required = false) Integer start,
+  public ResponseEntity<List<ResearchEntity>> getRsList(@RequestParam(required = false) Integer start,
                                   @RequestParam(required = false) Integer end) {
 
+    List<ResearchEntity> allResearch = researchService.findAll();
+
     start = (start == null ? 1 : start);
-    end = (end == null ? rsList.size() : end);
+    end = (end == null ? allResearch.size() : end);
 
     if (start < 1 || start > end || end > rsList.size()) {
       throw new RequestParamOutOfBoundsException();
     }
 
-    List<Research> outputRsList = rsList.subList(start - 1, end);
+    List<ResearchEntity> outputRsList = allResearch.subList(start - 1, end);
 
     return ResponseEntity.ok(outputRsList);
   }
@@ -66,21 +74,15 @@ public class RsController {
   }
 
   @PostMapping("/rs/add")
+  @Transactional
   public ResponseEntity addResearch(@RequestBody @Valid Research research) {
-    User user = research.getUser();
-    UserEntity userEntity = UserEntity.builder()
-        .userName(user.getUserName())
-        .age(user.getAge())
-        .gender(user.getGender())
-        .email(user.getEmail())
-        .phoneNumber(user.getPhoneNumber())
-        .build();
-    if (!userService.isExisted(user)) {
-      userService.save(user);
+    if (!userService.isExisted(research.getUser())) {
+      return ResponseEntity.badRequest().build();
     }
 
-    rsList.add(research);
-    return ResponseEntity.created(null).header("index", String.valueOf(rsList.size())).build();
+    ResearchEntity researchEntity = researchService.save(research);
+
+    return ResponseEntity.created(null).header("index", String.valueOf(researchEntity.getId() + 1)).build();
   }
 
   @PutMapping("/rs/modify/{id}")

@@ -23,33 +23,27 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RestController
-@Data
 @Slf4j
 public class UserController {
-  static Logger logger = LogManager.getLogger(UserController.class);
+  Logger logger = LogManager.getLogger(UserController.class);
 
-  @Autowired
-  private UserService userService;
+  final UserService userService;
 
-  public static List<User> userList = new LinkedList<>();
-  //代价：UserController中不同的test会互相影响
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
+
+//  public UserController(UserService userService) {
+//    this.userService = userService;
+//  }
 
   @PostMapping("/user/register")
   public ResponseEntity register(@RequestBody @Valid User user) {
     if (!userService.isExisted(user)) {
-      userService.save(user);
-      int id = userService.findId(user);
-      return ResponseEntity.created(null).header("index", String.valueOf(id)).build();
+      UserEntity saveUserEntity = userService.save(user);
+
+      return ResponseEntity.created(null).header("index", String.valueOf(saveUserEntity.getId())).build();
     }
-
-//    if (!userRepo.existsById(userEntity.getId())) {
-//      userRepo.save(userEntity);
-
-//    }
-//      if (!userList.contains(user)) {
-//        userList.add(user);
-//        return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
-//      }
 
     return ResponseEntity.badRequest().build();
   }

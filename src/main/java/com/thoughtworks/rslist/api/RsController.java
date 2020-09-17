@@ -1,13 +1,12 @@
 package com.thoughtworks.rslist.api;
 
-import com.thoughtworks.rslist.Repo.UserRepo;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.exceptions.RequestParamOutOfBoundsException;
+import com.thoughtworks.rslist.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,8 +27,7 @@ import java.util.List;
 @RestController
 @Slf4j
 public class RsController {
-  @Autowired
-  private UserRepo userRepo;
+  private final UserService userService;
 
   Logger logger = LogManager.getLogger(getClass());
   private List<Research> rsList = new ArrayList<>(
@@ -37,6 +35,11 @@ public class RsController {
       new Research("第一条事件", "经济", new User("ctt", 18, "female", "a@thoughtworks.com", "12345678901")),
       new Research("第二条事件", "政治", new User("cttClone", 20, "male", "b@thoughtworks.com", "11345678901")),
       new Research("第三条事件", "娱乐", new User("cT", 88, "male", "c@thoughtworks.com", "14345678901"))));
+
+  public RsController(UserService userService) {
+    this.userService = userService;
+  }
+
 
   @GetMapping("/rs/list")
   public ResponseEntity<List<Research>> getRsList(@RequestParam(required = false) Integer start,
@@ -72,8 +75,10 @@ public class RsController {
         .email(user.getEmail())
         .phoneNumber(user.getPhoneNumber())
         .build();
+    if (!userService.isExisted(user)) {
+      userService.save(user);
+    }
 
-    userRepo.save(userEntity);
     rsList.add(research);
     return ResponseEntity.created(null).header("index", String.valueOf(rsList.size())).build();
   }

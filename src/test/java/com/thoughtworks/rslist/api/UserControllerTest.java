@@ -1,22 +1,15 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.rslist.Repo.UserRepo;
-import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -33,9 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
   @Autowired
   MockMvc mockMvc;
-
-  @Autowired
-  UserService userService;
 
   @Test
   void validAddUserToDatabaseSuccessfully() throws Exception {
@@ -237,7 +227,7 @@ class UserControllerTest {
   }
 
   @Test
-  void should_return_400_and_error_comment_when_user_argument_not_valid() throws Exception{
+  void should_return_400_and_error_comment_when_user_argument_not_valid() throws Exception {
     User user = new User(null, 20, "male", "c@thoughtworks.com", "18888888818");
     ObjectMapper objectMapper = new ObjectMapper();
     String userJsonString = objectMapper.writeValueAsString(user);

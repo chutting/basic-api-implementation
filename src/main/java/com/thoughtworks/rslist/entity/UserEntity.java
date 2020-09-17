@@ -42,4 +42,6 @@ public class UserEntity {
   private String email;
 
   private String phoneNumber;
+
+  private int voteNum = 10;
 }

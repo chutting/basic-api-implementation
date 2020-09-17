@@ -179,8 +179,8 @@ public class RsControllerTest {
     mockMvc.perform(get("/users"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)))
-        .andExpect(jsonPath("$[0].user_name", is("ctt")))
-        .andExpect(jsonPath("$[1].user_name", is("cttClone")));
+        .andExpect(jsonPath("$[0].userName", is("ctt")))
+        .andExpect(jsonPath("$[1].userName", is("cttClone")));
   }
 
   @Test

@@ -33,6 +33,10 @@ public class UserService {
     return userRepo.findById(id).get();
   }
 
+  public void deleteById(int id) {
+    userRepo.deleteById(id);
+  }
+
 //  public boolean isExisted(User user) {
 //    int count = userRepo.ExistedByName(user.getUserName());
 //    return count != 0;

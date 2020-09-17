@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,6 +63,11 @@ public class UserController {
   public ResponseEntity<List<UserEntity>> showAllUsers() {
     List<UserEntity> allUsers = userService.findAllUsers();
     return ResponseEntity.ok(allUsers);
+  }
+
+  @DeleteMapping("/delete/{id}")
+  public void deleteById(@PathVariable int id) {
+    userService.deleteById(id);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

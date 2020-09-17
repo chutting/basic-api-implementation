@@ -21,6 +21,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -77,6 +78,31 @@ class UserControllerTest {
         .andExpect(jsonPath("$.userName", is("cttClone")));
   }
 
+  @Test
+  void shouldDeleteUserById() throws Exception {
+    User userA = new User("ctt", 18, "female", "a@thoughtworks.com", "18888888888");
+    User userB = new User("cttClone", 18, "female", "a@thoughtworks.com", "18888888888");
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String userAJsonString = objectMapper.writeValueAsString(userA);
+    String userBJsonString = objectMapper.writeValueAsString(userB);
+
+    mockMvc.perform(post("/user/register")
+        .content(userAJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    mockMvc.perform(post("/user/register")
+        .content(userBJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE));
+
+    mockMvc.perform(delete("/delete/1"))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(get("/users"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].userName", is("cttClone")));
+  }
 
 
 //  @Test

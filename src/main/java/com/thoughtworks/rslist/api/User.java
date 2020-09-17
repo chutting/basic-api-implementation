@@ -17,6 +17,15 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+  private Integer id;
+
+  public User(@NotEmpty @Size(max = 8) String userName, @NotNull @Range(min = 18, max = 100) Integer age, @NotEmpty String gender, @Email String email, @NotEmpty @Pattern(regexp = "^1\\d{10}") String phoneNumber) {
+    this.userName = userName;
+    this.age = age;
+    this.gender = gender;
+    this.email = email;
+    this.phoneNumber = phoneNumber;
+  }
 
   @NotEmpty
   @Size(max = 8)

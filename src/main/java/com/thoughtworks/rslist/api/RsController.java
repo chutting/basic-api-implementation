@@ -60,6 +60,10 @@ public class RsController {
       throw new RequestParamOutOfBoundsException();
     }
 
+    if (allResearch.size() == 0) {
+      return ResponseEntity.ok(allResearch);
+    }
+
     List<ResearchEntity> outputRsList = allResearch.subList(start - 1, end);
 
     return ResponseEntity.ok(outputRsList);

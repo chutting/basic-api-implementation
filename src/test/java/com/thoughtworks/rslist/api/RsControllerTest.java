@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.Repo.ResearchRepo;
 import com.thoughtworks.rslist.Repo.UserRepo;
+import com.thoughtworks.rslist.entity.ResearchEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -103,18 +104,11 @@ public class RsControllerTest {
   @Test
   void shouldCouldAddResearchWhenUserExists() throws Exception {
     User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
-    userRepo.save(UserEntity.builder()
-        .userName(user.getUserName())
-        .age(user.getAge())
-        .gender(user.getGender())
-        .email(user.getEmail())
-        .phoneNumber(user.getPhoneNumber())
-        .build());
+    userRepo.save(convertUserToUserEntity(user));
 
     Research researchWithIndexFour = new Research("第四条事件", "教育", user);
 
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
-
 
     MvcResult mvcResult = mockMvc.perform(post("/rs/add")
         .content(researchIndexFourJsonString)
@@ -146,8 +140,46 @@ public class RsControllerTest {
         .content(researchIndexFourJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
-
   }
+
+  @Test
+  void deleteAllResearchWhenDeleteUser() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+
+    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
+    String researchIndexOneJsonString = convertResearchToJsonString(researchWithIndexOne, user);
+
+    mockMvc.perform(post("/rs/add")
+        .content(researchIndexFourJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isCreated());
+
+    mockMvc.perform(post("/rs/add")
+        .content(researchIndexOneJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isCreated());
+
+    mockMvc.perform(delete("/user/delete/1"))
+        .andExpect(status().isNoContent());
+
+    assertEquals(0, researchRepo.findAll().size());
+  }
+
+  private UserEntity convertUserToUserEntity(User user) {
+    return UserEntity.builder()
+        .userName(user.getUserName())
+        .age(user.getAge())
+        .gender(user.getGender())
+        .email(user.getEmail())
+        .phoneNumber(user.getPhoneNumber())
+        .id(user.getId())
+        .build();
+  }
+
 
   @Test
   void shouldCouldModifyResearchNameAndKeywordByIndex() throws Exception {

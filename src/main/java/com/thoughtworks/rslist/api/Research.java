@@ -32,12 +32,12 @@ public class Research {
 //  @JsonView(WithUserView.class)
   private @Valid User user;
 
-  @JsonIgnore
+  @JsonProperty
   public User getUser() {
     return user;
   }
 
-  @JsonProperty
+  @JsonIgnore
   public void setUser(User user) {
     this.user = user;
   }

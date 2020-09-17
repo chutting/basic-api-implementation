@@ -29,7 +29,7 @@ import javax.validation.constraints.NotNull;
 public class ResearchEntity {
 
   @Id
-//  @GeneratedValue
+  @GeneratedValue
   private int id;
 
   @Column(name = "name")
@@ -37,17 +37,17 @@ public class ResearchEntity {
 
   private String keyword;
 
-  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_id")
-  private UserEntity userEntity;
-
-  @JsonProperty
-  public UserEntity getUserEntity() {
-    return userEntity;
-  }
-
-  @JsonIgnore
-  public void setUserEntity(UserEntity userEntity) {
-    this.userEntity = userEntity;
-  }
+  private Integer userId;
+//  private UserEntity userEntity;
+//
+//  @JsonIgnore
+//  public UserEntity getUserEntity() {
+//    return userEntity;
+//  }
+//
+//  @JsonProperty
+//  public void setUserEntity(UserEntity userEntity) {
+//    this.userEntity = userEntity;
+//  }
 }

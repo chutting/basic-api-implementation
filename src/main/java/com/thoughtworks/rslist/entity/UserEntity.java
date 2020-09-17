@@ -49,6 +49,6 @@ public class UserEntity {
 
   private int voteNum;
 
-//  @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
-//  private List<ResearchEntity> researchList;
+  @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
+  private List<ResearchEntity> researchList;
 }

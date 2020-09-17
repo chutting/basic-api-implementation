@@ -45,8 +45,8 @@ public class UserService {
   }
 
   public boolean isExisted(User user) {
-    Optional<Integer> idOption = userRepo.findIdByUserName(user.getUserName());
-    return idOption.isPresent();
+    Optional<UserEntity> userEntity = userRepo.findByUserName(user.getUserName());
+    return userEntity.isPresent();
   }
 
 }

@@ -4,11 +4,9 @@ import com.thoughtworks.rslist.Repo.UserRepo;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.service.UserService;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
-import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -32,10 +29,6 @@ public class UserController {
   public UserController(UserService userService) {
     this.userService = userService;
   }
-
-//  public UserController(UserService userService) {
-//    this.userService = userService;
-//  }
 
   @PostMapping("/user/register")
   public ResponseEntity register(@RequestBody @Valid User user) {

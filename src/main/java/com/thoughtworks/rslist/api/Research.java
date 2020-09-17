@@ -1,10 +1,8 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,13 +15,19 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Data
 public class Research {
+//  public interface WithoutUserView {};
+//  public interface WithUserView extends WithoutUserView {};
+
   @NotEmpty
+//  @JsonView(WithoutUserView.class)
   private String name;
 
   @NotEmpty
+//  @JsonView(WithoutUserView.class)
   private String keyword;
 
   @NotNull
+//  @JsonView(WithUserView.class)
   private @Valid User user;
 
   @JsonIgnore
@@ -34,11 +38,6 @@ public class Research {
   @JsonProperty
   public void setUser(User user) {
     this.user = user;
-  }
-
-  public Research(String name, String keyword) {
-    this.name = name;
-    this.keyword = keyword;
   }
 
   @Override

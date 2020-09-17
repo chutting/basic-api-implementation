@@ -10,6 +10,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.io.ByteArrayOutputStream;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
@@ -272,12 +274,5 @@ public class RsControllerTest {
     String userJson = objectMapper.writeValueAsString(user);
     StringBuilder output = stringBuilder.append(",\"user\":").append(userJson).append("}");
     return output.toString();
-  }
-
-  private String convertResearchToJsonString(Research research) throws Exception {
-    ObjectMapper objectMapper = new ObjectMapper();
-    String jsonString = objectMapper.writeValueAsString(research);
-
-    return jsonString;
   }
 }

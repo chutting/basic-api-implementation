@@ -15,6 +15,7 @@ public class ControllerExceptionHandler {
   @ExceptionHandler(RequestParamOutOfBoundsException.class)
   public ResponseEntity handleRequestParamOutOfBoundException(RequestParamOutOfBoundsException e) {
     ErrorComment errorComment = new ErrorComment("invalid request param");
+//    String errorMassage = e.getMessage();
     logger.error(errorComment.getError());
     return ResponseEntity.badRequest().body(errorComment);
   }

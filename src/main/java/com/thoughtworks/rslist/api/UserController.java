@@ -1,10 +1,13 @@
 package com.thoughtworks.rslist.api;
 
+import com.thoughtworks.rslist.Repo.UserRepo;
+import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,17 +25,33 @@ import java.util.List;
 public class UserController {
   static Logger logger = LogManager.getLogger(UserController.class);
 
+  @Autowired
+  private UserRepo userRepo;
+
   public static List<User> userList = new LinkedList<>();
   //代价：UserController中不同的test会互相影响
 
   @PostMapping("/user/register")
-  public static ResponseEntity register(@RequestBody @Valid User user) {
-      if (!userList.contains(user)) {
-        userList.add(user);
-        return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
-      }
+  public ResponseEntity register(@RequestBody @Valid User user) {
+    UserEntity userEntity = UserEntity.builder()
+        .userName(user.getUserName())
+        .age(user.getAge())
+        .gender(user.getGender())
+        .email(user.getEmail())
+        .phoneNumber(user.getPhoneNumber())
+        .build();
 
-      return ResponseEntity.badRequest().build();
+//    if (!userRepo.existsById(userEntity.getId())) {
+      userRepo.save(userEntity);
+      return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
+
+//    }
+//      if (!userList.contains(user)) {
+//        userList.add(user);
+//        return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
+//      }
+
+//      return ResponseEntity.badRequest().build();
   }
 
   @GetMapping("/users")

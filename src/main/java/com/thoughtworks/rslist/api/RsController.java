@@ -1,10 +1,13 @@
 package com.thoughtworks.rslist.api;
 
+import com.thoughtworks.rslist.Repo.UserRepo;
+import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.exceptions.RequestParamOutOfBoundsException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +28,9 @@ import java.util.List;
 @RestController
 @Slf4j
 public class RsController {
+  @Autowired
+  private UserRepo userRepo;
+
   Logger logger = LogManager.getLogger(getClass());
   private List<Research> rsList = new ArrayList<>(
       Arrays.asList(
@@ -59,7 +65,15 @@ public class RsController {
   @PostMapping("/rs/add")
   public ResponseEntity addResearch(@RequestBody @Valid Research research) {
     User user = research.getUser();
-    UserController.register(user);
+    UserEntity userEntity = UserEntity.builder()
+        .userName(user.getUserName())
+        .age(user.getAge())
+        .gender(user.getGender())
+        .email(user.getEmail())
+        .phoneNumber(user.getPhoneNumber())
+        .build();
+
+    userRepo.save(userEntity);
     rsList.add(research);
     return ResponseEntity.created(null).header("index", String.valueOf(rsList.size())).build();
   }

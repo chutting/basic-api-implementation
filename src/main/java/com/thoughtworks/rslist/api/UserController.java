@@ -36,10 +36,11 @@ public class UserController {
 
   @PostMapping("/user/register")
   public ResponseEntity register(@RequestBody @Valid User user) {
-//    if (userService.isExisted(user)) {
+    if (!userService.isExisted(user)) {
       userService.save(user);
-      return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
-//    }
+      int id = userService.findId(user);
+      return ResponseEntity.created(null).header("index", String.valueOf(id)).build();
+    }
 
 //    if (!userRepo.existsById(userEntity.getId())) {
 //      userRepo.save(userEntity);
@@ -50,7 +51,7 @@ public class UserController {
 //        return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
 //      }
 
-//      return ResponseEntity.badRequest().build();
+    return ResponseEntity.badRequest().build();
   }
 
   @GetMapping("/user/{id}")

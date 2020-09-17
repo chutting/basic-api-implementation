@@ -10,6 +10,9 @@ public interface UserRepo extends CrudRepository<UserEntity, Integer> {
   @Override
   List<UserEntity> findAll();
 
-//  @Query("SELECT COUNT(id) FROM users WHERE name = :name")
-//  int ExistedByName(String name);
+  @Query(value = "SELECT COUNT(id) FROM users WHERE name = ?1", nativeQuery = true)
+  int ExistedByName(String name);
+
+  @Query(value = "SELECT id FROM users WHERE name = ?1", nativeQuery = true)
+  int findIdByName(String name);
 }

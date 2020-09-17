@@ -8,6 +8,7 @@ import com.thoughtworks.rslist.entity.ResearchEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -36,6 +37,21 @@ public class ResearchService {
 
   public List<ResearchEntity> findAll() {
     return researchRepo.findAll();
+  }
+
+  @Transactional
+  public void updateNameById(String name, String id) {
+    researchRepo.updateNameById(name, Integer.parseInt(id));
+  }
+
+  @Transactional
+  public void updateKeywordById(String keyword, String id) {
+    researchRepo.updateKeywordById(keyword, Integer.parseInt(id));
+  }
+
+  @Transactional
+  public void updateNameAndKeywordById(String name, String keyword, String id) {
+    researchRepo.updateNameAndKeywordById(name, keyword, Integer.parseInt(id));
   }
 
 }

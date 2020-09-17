@@ -15,6 +15,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
@@ -22,6 +24,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -169,6 +172,76 @@ public class RsControllerTest {
     assertEquals(0, researchRepo.findAll().size());
   }
 
+  @Test
+  void shouldPatchUpdate() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    UserEntity userEntity = userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    String updateJson = "{\"eventName\": \"新的热搜事件名\"," +
+        "                  \"keyword\": \"新的关键字\"," +
+        "                  \"userId\": " + userEntity.getId() +"}";
+
+    mockMvc.perform(patch("/rs/patch")
+        .content(updateJson)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(get("/rs/list"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].eventName", is("新的热搜事件名")))
+        .andExpect(jsonPath("$[1].keyword", is("新的关键字")));
+  }
+
+  @Test
+  void shouldPatchOnlyUpdateKeyword() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    UserEntity userEntity = userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    String updateJson = "{ \"keyword\": \"新的关键字\"," +
+        "                  \"userId\": " + userEntity.getId() +"}";
+
+    mockMvc.perform(patch("/rs/patch")
+        .content(updateJson)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(get("/rs/list"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("新的关键字")));
+  }
+
+  @Test
+  void shouldPatchOnlyUpdateEventName() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    UserEntity userEntity = userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    String updateJson = "{\"eventName\": \"新的热搜事件名\"," +
+        "                  \"userId\": " + userEntity.getId() +"}";
+
+    mockMvc.perform(patch("/rs/patch")
+        .content(updateJson)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(get("/rs/list"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].eventName", is("新的热搜事件名")))
+        .andExpect(jsonPath("$[1].keyword", is("情感")));
+  }
+
   private UserEntity convertUserToUserEntity(User user) {
     return UserEntity.builder()
         .userName(user.getUserName())
@@ -177,6 +250,16 @@ public class RsControllerTest {
         .email(user.getEmail())
         .phoneNumber(user.getPhoneNumber())
         .id(user.getId())
+        .build();
+  }
+
+  private ResearchEntity convertResearchToResearchEntity(Research research) {
+    UserEntity userEntity = userRepo.findByUserName(research.getUser().getUserName()).get();
+
+    return ResearchEntity.builder()
+        .eventName(research.getName())
+        .keyword(research.getKeyword())
+        .userId(userEntity.getId())
         .build();
   }
 

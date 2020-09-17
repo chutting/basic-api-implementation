@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,6 +28,7 @@ import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -113,5 +115,21 @@ public class RsController {
   @DeleteMapping("/rs/delete/{id}")
   public void deleteResearch(@PathVariable int id) {
     rsList.remove(id - 1);
+  }
+
+  @PatchMapping("/rs/patch")
+  public void patchUpdateResearch(@RequestBody Map<String, String> jsonMap) {
+    String userId = jsonMap.get("userId");
+    if (jsonMap.containsKey("keyword") && jsonMap.containsKey("eventName")) {
+      researchService.updateNameAndKeywordById(jsonMap.get("eventName"), jsonMap.get("keyword"), userId);
+    }
+
+    if (!jsonMap.containsKey("keyword") && jsonMap.containsKey("eventName")) {
+      researchService.updateNameById(jsonMap.get("eventName"), userId);
+    }
+
+    if (jsonMap.containsKey("keyword") && !jsonMap.containsKey("eventName")) {
+      researchService.updateKeywordById(jsonMap.get("keyword"), userId);
+    }
   }
 }

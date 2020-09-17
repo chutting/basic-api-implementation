@@ -1,6 +1,6 @@
-package com.thoughtworks.rslist.api;
+package com.thoughtworks.rslist.controller;
 
-import com.thoughtworks.rslist.Repo.UserRepo;
+import com.thoughtworks.rslist.api.User;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.service.UserService;

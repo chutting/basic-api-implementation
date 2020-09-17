@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,7 +48,8 @@ public class UserEntity {
 
   private String phoneNumber;
 
-  private int voteNum;
+  @Builder.Default
+  private Integer voteNum = 10;
 
   @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
   private List<ResearchEntity> researchList;

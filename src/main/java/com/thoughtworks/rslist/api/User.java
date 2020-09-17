@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -49,6 +51,11 @@ public class User {
   @Pattern(regexp = "^1\\d{10}")
   @JsonProperty("user_phone")
   private String phoneNumber;
+
+  @NotNull
+  @Min(0)
+  @Max(10)
+  private Integer voteNum = 10;
 
   @Override
   public boolean equals(Object o) {

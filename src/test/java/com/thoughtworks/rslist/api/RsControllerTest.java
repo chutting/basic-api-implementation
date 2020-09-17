@@ -15,6 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import javax.persistence.Table;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,11 +42,6 @@ public class RsControllerTest {
 
   @Autowired
   MockMvc mockMvc;
-
-//  public RsControllerTest(UserRepo userRepo, ResearchRepo researchRepo) {
-//    this.userRepo = userRepo;
-//    this.researchRepo = researchRepo;
-//  }
 
   @BeforeEach
   void deleteAllInDataBase() {
@@ -122,7 +118,7 @@ public class RsControllerTest {
     String responseIndex = mvcResult.getResponse().getHeader("index");
 
     assertEquals(201, status);
-    assertEquals("1", responseIndex);
+    assertEquals("2", responseIndex);
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
@@ -240,6 +236,34 @@ public class RsControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("新的热搜事件名")))
         .andExpect(jsonPath("$[1].keyword", is("情感")));
+  }
+
+  @Test
+  void could_vote() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    UserEntity userEntity = userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    String voteJsonString = "{\"voteNum\": \"5\"," +
+        "                  \"userId\": " + userEntity.getId() + "," +
+        "                  \"voteTime\": \"current time\"" +"}";
+
+    mockMvc.perform(post("/rs/vote/2")
+        .content(voteJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk());
+
+    String secondVoteJsonString = "{\"voteNum\": \"6\"," +
+        "                  \"userId\": " + userEntity.getId() + "," +
+        "                  \"voteTime\": \"current time\"" +"}";
+
+    mockMvc.perform(post("/rs/vote/1")
+        .content(secondVoteJsonString)
+        .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isBadRequest());
   }
 
   private UserEntity convertUserToUserEntity(User user) {

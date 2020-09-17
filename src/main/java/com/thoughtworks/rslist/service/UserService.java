@@ -3,9 +3,11 @@ package com.thoughtworks.rslist.service;
 import com.thoughtworks.rslist.Repo.UserRepo;
 import com.thoughtworks.rslist.api.User;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.entity.VoteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,4 +51,14 @@ public class UserService {
     return userEntity.isPresent();
   }
 
+  @Transactional
+  public boolean vote(int userId, int voteNum) {
+    Optional<UserEntity> userById = userRepo.findById(userId);
+
+    if (!userById.isPresent() || userById.get().getVoteNum() < voteNum) {
+      return false;
+    }
+    userRepo.updateVoteNumById(userById.get().getVoteNum() - voteNum, userId);
+    return true;
+  }
 }

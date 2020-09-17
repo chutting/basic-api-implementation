@@ -1,11 +1,14 @@
-package com.thoughtworks.rslist.api;
+package com.thoughtworks.rslist.controller;
 
+import com.thoughtworks.rslist.api.Research;
+import com.thoughtworks.rslist.api.User;
 import com.thoughtworks.rslist.entity.ResearchEntity;
-import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.exceptions.RequestParamOutOfBoundsException;
 import com.thoughtworks.rslist.service.ResearchService;
 import com.thoughtworks.rslist.service.UserService;
+import com.thoughtworks.rslist.service.VoteService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +37,8 @@ import java.util.Map;
 public class RsController {
   private final UserService userService;
   private final ResearchService researchService;
+  private final VoteService voteService;
+
 
   Logger logger = LogManager.getLogger(getClass());
   private List<Research> rsList = new ArrayList<>(
@@ -43,9 +47,10 @@ public class RsController {
       new Research("第二条事件", "政治", new User("cttClone", 20, "male", "b@thoughtworks.com", "11345678901")),
       new Research("第三条事件", "娱乐", new User("cT", 88, "male", "c@thoughtworks.com", "14345678901"))));
 
-  public RsController(UserService userService, ResearchService researchService) {
+  public RsController(UserService userService, ResearchService researchService, VoteService voteService) {
     this.userService = userService;
     this.researchService = researchService;
+    this.voteService = voteService;
   }
 
 
@@ -88,7 +93,26 @@ public class RsController {
 
     ResearchEntity researchEntity = researchService.save(research);
 
-    return ResponseEntity.created(null).header("index", String.valueOf(researchEntity.getId() + 1)).build();
+    return ResponseEntity.created(null).header("index", String.valueOf(researchEntity.getId())).build();
+  }
+
+  @PostMapping("/rs/vote/{rsEventId}")
+  @Transactional
+  public ResponseEntity vote(@PathVariable int rsEventId,
+                             @RequestBody Map<String, String> voteJsonMap) {
+
+    boolean isVoteSuccess = userService.vote(Integer.parseInt(voteJsonMap.get("userId")), Integer.parseInt(voteJsonMap.get("voteNum")));
+    if (isVoteSuccess) {
+      VoteEntity newVoteEntity = VoteEntity.builder()
+          .rsEventId(rsEventId)
+          .userId(Integer.parseInt(voteJsonMap.get("userId")))
+          .voteNum(Integer.parseInt(voteJsonMap.get("voteNum")))
+          .voteTime(voteJsonMap.get("voteTime"))
+          .build();
+      voteService.addVoteRecord(newVoteEntity);
+      return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.badRequest().build();
   }
 
   @PutMapping("/rs/modify/{id}")

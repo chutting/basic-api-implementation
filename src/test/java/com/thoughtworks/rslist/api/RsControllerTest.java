@@ -51,52 +51,104 @@ public class RsControllerTest {
 
   @Test
   void shouldGetRsListString() throws Exception {
-    checkRsListOriginalValue();
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+
+    mockMvc.perform(get("/rs/list"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
+        .andExpect(jsonPath("$[0].voteNum", is(0)))
+        .andExpect(jsonPath("$[0].id", is(2)))
+        .andExpect(jsonPath("$[0]", not(hasKey("user"))));
   }
 
   @Test
   void shouldGetResearchByIndex() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
 
-    mockMvc.perform(get("/rs/findByIndex/1").contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name", is("第一条事件")))
-        .andExpect(jsonPath("$", not(hasKey("user"))));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
 
-    mockMvc.perform(get("/rs/findByIndex/3").contentType(MediaType.APPLICATION_JSON_VALUE))
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    mockMvc.perform(get("/rs/findByIndex/2"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name", is("第三条事件")))
-        .andExpect(jsonPath("$", not(hasKey("user"))));
+        .andExpect(jsonPath("$.eventName", is("第四条事件")));
+
+    mockMvc.perform(get("/rs/findByIndex/3"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.eventName", is("第一条事件")));
   }
 
   @Test
   void shouldGetResearchListStringByStartIndexAndEndIndex() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    Research researchWithIndexTwo = new Research("第二条事件", "经济", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexTwo));
+
     mockMvc.perform(get("/rs/list?start=2&end=3"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].name", is("第二条事件")))
+        .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
         .andExpect(jsonPath("$[0]", not(hasKey("user"))))
-        .andExpect(jsonPath("$[1].name", is("第三条事件")))
+        .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
         .andExpect(jsonPath("$[1]", not(hasKey("user"))));
   }
 
   @Test
   void shouldGetResearchListStringByStartIndex() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    Research researchWithIndexTwo = new Research("第二条事件", "经济", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexTwo));
+
     mockMvc.perform(get("/rs/list?start=2"))
         .andExpect(status().isOk())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].name", is("第二条事件")))
+        .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
         .andExpect(jsonPath("$[0]", not(hasKey("user"))))
-        .andExpect(jsonPath("$[1].name", is("第三条事件")))
+        .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
         .andExpect(jsonPath("$[1]", not(hasKey("user"))));
   }
 
   @Test
   void shouldGetResearchListStringByEndIndex() throws Exception {
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    Research researchWithIndexTwo = new Research("第二条事件", "经济", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexTwo));
+
     mockMvc.perform(get("/rs/list?end=2"))
         .andExpect(status().isOk())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].name", is("第一条事件")))
+        .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
         .andExpect(jsonPath("$[0]", not(hasKey("user"))))
-        .andExpect(jsonPath("$[1].name", is("第二条事件")))
+        .andExpect(jsonPath("$[1].eventName", is("第一条事件")))
         .andExpect(jsonPath("$[1]", not(hasKey("user"))));
   }
 
@@ -285,111 +337,88 @@ public class RsControllerTest {
         .andExpect(status().isBadRequest());
   }
 
-  private UserEntity convertUserToUserEntity(User user) {
-    return UserEntity.builder()
-        .userName(user.getUserName())
-        .age(user.getAge())
-        .gender(user.getGender())
-        .email(user.getEmail())
-        .phoneNumber(user.getPhoneNumber())
-        .id(user.getId())
-        .build();
-  }
-
-  private ResearchEntity convertResearchToResearchEntity(Research research) {
-    UserEntity userEntity = userRepo.findByUserName(research.getUser().getUserName()).get();
-
-    return ResearchEntity.builder()
-        .eventName(research.getName())
-        .keyword(research.getKeyword())
-        .userId(userEntity.getId())
-        .build();
-  }
-
-
   @Test
   void shouldCouldModifyResearchNameAndKeywordByIndex() throws Exception {
-    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
-    Research researchWithIndexOneModified = new Research("经过修改后的第一条事件", "情感", user);
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    ResearchEntity researchEntity = researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+
+    Research researchWithIndexOneModified = new Research("经过修改后的第一条事件", "经济", user);
 
     String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified, user);
 
-    checkRsListOriginalValue();
-
-    performPut("/rs/modify/1", researchIndexOneJsonStringModified);
+    performPut("/rs/modify/" + researchEntity.getId(), researchIndexOneJsonStringModified);
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].name", is("经过修改后的第一条事件")))
-        .andExpect(jsonPath("$[0].keyword", is("情感")));
+        .andExpect(jsonPath("$[1].eventName", is("经过修改后的第一条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("经济")));
   }
 
   @Test
   void shouldCouldModifyResearchNameByIndex() throws Exception {
-    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
-    Research researchWithIndexTwoModified = new Research("经过修改后的第二条事件", "", user);
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    ResearchEntity researchEntity = researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
-    String researchIndexTwoJsonStringModified = convertResearchToJsonString(researchWithIndexTwoModified, user);
+    Research researchWithIndexOneModified = new Research("经过修改后的第一条事件", "", user);
 
-    performPut("/rs/modify/2", researchIndexTwoJsonStringModified);
+    String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified, user);
+
+    performPut("/rs/modify/" + researchEntity.getId(), researchIndexOneJsonStringModified);
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[1].name", is("经过修改后的第二条事件")))
-        .andExpect(jsonPath("$[1].keyword", is("政治")));
+        .andExpect(jsonPath("$[1].eventName", is("经过修改后的第一条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("情感")));
   }
 
   @Test
   void shouldCouldModifyResearchKeywordByIndex() throws Exception {
-    User user = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
-    Research researchWithIndexThreeModified = new Research("", "军事", user);
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    ResearchEntity researchEntity = researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
-    String researchIndexThreeJsonStringModified = convertResearchToJsonString(researchWithIndexThreeModified, user);
+    Research researchWithIndexOneModified = new Research("", "军事", user);
 
-    performPut("/rs/modify/3", researchIndexThreeJsonStringModified);
+    String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified, user);
+
+    performPut("/rs/modify/" + researchEntity.getId(), researchIndexOneJsonStringModified);
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[2].name", is("第三条事件")))
-        .andExpect(jsonPath("$[2].keyword", is("军事")));
+        .andExpect(jsonPath("$[1].eventName", is("第一条事件")))
+        .andExpect(jsonPath("$[1].keyword", is("军事")));
   }
 
   @Test
   void shouldCouldDeleteByIndex() throws Exception {
-    mockMvc.perform(get("/rs/list"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(3)));
-
-    mockMvc.perform(delete("/rs/delete/1"))
-        .andExpect(status().isOk());
+    User user = new User("ctt", 18, "female","a@thoughtworks.com", "12345678911");
+    userRepo.save(convertUserToUserEntity(user));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", user);
+    Research researchWithIndexOne = new Research("第一条事件", "情感", user);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    ResearchEntity researchEntity = researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)));
-  }
 
-  @Test
-  void shouldAddNewUserWhenAddResearch() throws Exception {
-    User userA = new User("ctt", 18, "female", "a@thoughtworks.com", "12345678911");
-    User userB = new User("cttClone", 19, "male", "c@123.com", "19876543211");
+    mockMvc.perform(delete("/rs/delete/" + researchEntity.getId()))
+        .andExpect(status().isOk());
 
-    Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
-    Research researchWithIndexFive = new Research("第五条事件", "八卦", userA);
-    Research researchWithIndexSix = new Research("第六条事件", "科技", userB);
-
-    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, userA);
-    String researchIndexFiveJsonString = convertResearchToJsonString(researchWithIndexFive, userA);
-    String researchIndexSixJsonString = convertResearchToJsonString(researchWithIndexSix, userB);
-
-    addResearchShouldSuccess(researchIndexFourJsonString, "4");
-    addResearchShouldSuccess(researchIndexFiveJsonString, "5");
-    addResearchShouldSuccess(researchIndexSixJsonString, "6");
-
-    mockMvc.perform(get("/users"))
+    mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)))
-        .andExpect(jsonPath("$[0].userName", is("ctt")))
-        .andExpect(jsonPath("$[1].userName", is("cttClone")));
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -461,6 +490,8 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name", is("第一条事件")))
+        .andExpect(jsonPath("$[0].voteNum", is(10)))
+        .andExpect(jsonPath("$[0].id", is(1)))
         .andExpect(jsonPath("$[0]", not(hasKey("user"))))
         .andExpect(jsonPath("$[1].name", is("第二条事件")))
         .andExpect(jsonPath("$[1]", not(hasKey("user"))))
@@ -484,4 +515,26 @@ public class RsControllerTest {
     StringBuilder output = stringBuilder.append(",\"user\":").append(userJson).append("}");
     return output.toString();
   }
+
+  private ResearchEntity convertResearchToResearchEntity(Research research) {
+    UserEntity userEntity = userRepo.findByUserName(research.getUser().getUserName()).get();
+
+    return ResearchEntity.builder()
+        .eventName(research.getName())
+        .keyword(research.getKeyword())
+        .userId(userEntity.getId())
+        .build();
+  }
+
+  private UserEntity convertUserToUserEntity(User user) {
+    return UserEntity.builder()
+        .userName(user.getUserName())
+        .age(user.getAge())
+        .gender(user.getGender())
+        .email(user.getEmail())
+        .phoneNumber(user.getPhoneNumber())
+        .id(user.getId())
+        .build();
+  }
+
 }

@@ -83,7 +83,7 @@ class UserControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE));
 
     mockMvc.perform(delete("/user/delete/1"))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     mockMvc.perform(get("/users"))
         .andExpect(status().isOk())

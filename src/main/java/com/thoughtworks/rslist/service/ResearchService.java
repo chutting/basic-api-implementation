@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ResearchService {
@@ -39,19 +40,41 @@ public class ResearchService {
     return researchRepo.findAll();
   }
 
-  @Transactional
-  public void updateNameById(String name, String id) {
-    researchRepo.updateNameById(name, Integer.parseInt(id));
+  public ResearchEntity findResearchById(int researchId) {
+    Optional<ResearchEntity> researchOptional = researchRepo.findById(researchId);
+    if (!researchOptional.isPresent()) {
+      throw new IndexOutOfBoundsException();
+    }
+    return researchRepo.findById(researchId).get();
   }
 
   @Transactional
-  public void updateKeywordById(String keyword, String id) {
-    researchRepo.updateKeywordById(keyword, Integer.parseInt(id));
+  public void updateNameByUserId(String name, String id) {
+    researchRepo.updateNameByUserId(name, Integer.parseInt(id));
   }
 
   @Transactional
-  public void updateNameAndKeywordById(String name, String keyword, String id) {
-    researchRepo.updateNameAndKeywordById(name, keyword, Integer.parseInt(id));
+  public void updateKeywordByUserId(String keyword, String id) {
+    researchRepo.updateKeywordByUserId(keyword, Integer.parseInt(id));
   }
 
+  @Transactional
+  public void updateNameAndKeywordByUserId(String name, String keyword, String id) {
+    researchRepo.updateNameAndKeywordByUserId(name, keyword, Integer.parseInt(id));
+  }
+
+  @Transactional
+  public void updateNameById(String name, int id) {
+    researchRepo.updateNameById(name, id);
+  }
+
+  @Transactional
+  public void updateKeywordById(String keyword, int id) {
+    researchRepo.updateKeywordById(keyword, id);
+  }
+
+  @Transactional
+  public void deleteById(int id) {
+    researchRepo.deleteById(id);
+  }
 }

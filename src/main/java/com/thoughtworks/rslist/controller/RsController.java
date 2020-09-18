@@ -40,18 +40,12 @@ public class RsController {
   private final VoteService voteService;
 
   Logger logger = LogManager.getLogger(getClass());
-  private List<Research> rsList = new ArrayList<>(
-      Arrays.asList(
-      new Research("第一条事件", "经济", new User("ctt", 18, "female", "a@thoughtworks.com", "12345678901")),
-      new Research("第二条事件", "政治", new User("cttClone", 20, "male", "b@thoughtworks.com", "11345678901")),
-      new Research("第三条事件", "娱乐", new User("cT", 88, "male", "c@thoughtworks.com", "14345678901"))));
 
   public RsController(UserService userService, ResearchService researchService, VoteService voteService) {
     this.userService = userService;
     this.researchService = researchService;
     this.voteService = voteService;
   }
-
 
   @GetMapping("/rs/list")
   public ResponseEntity<List<ResearchEntity>> getRsList(@RequestParam(required = false) Integer start,
@@ -62,7 +56,7 @@ public class RsController {
     start = (start == null ? 1 : start);
     end = (end == null ? allResearch.size() : end);
 
-    if (start < 1 || start > end || end > rsList.size()) {
+    if (start < 1 || start > end || end > allResearch.size()) {
       throw new RequestParamOutOfBoundsException();
     }
 
@@ -76,11 +70,9 @@ public class RsController {
   }
 
   @GetMapping("/rs/findByIndex/{id}")
-  public ResponseEntity<Research> getResearchByIndex(@PathVariable int id) {
-    if (id < 1 || id > rsList.size()) {
-      throw new IndexOutOfBoundsException();
-    }
-    return ResponseEntity.ok(rsList.get(id - 1));
+  public ResponseEntity<ResearchEntity> getResearchByIndex(@PathVariable int id) {
+
+    return ResponseEntity.ok(researchService.findResearchById(id));
   }
 
   @PostMapping("/rs/add")
@@ -121,15 +113,13 @@ public class RsController {
   @PutMapping("/rs/modify/{id}")
   public void modifyResearch(@PathVariable int id, @RequestBody Research research) {
 
-    Research researchWantToModified = rsList.get(id - 1);
     if (!research.getName().isEmpty()) {
-      researchWantToModified.setName(research.getName());
+      researchService.updateNameById(research.getName(), id);
     }
     if (!research.getKeyword().isEmpty()) {
-      researchWantToModified.setKeyword(research.getKeyword());
+      researchService.updateKeywordById(research.getKeyword(), id);
     }
 
-    rsList.set(id - 1, researchWantToModified);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -141,22 +131,22 @@ public class RsController {
 
   @DeleteMapping("/rs/delete/{id}")
   public void deleteResearch(@PathVariable int id) {
-    rsList.remove(id - 1);
+    researchService.deleteById(id);
   }
 
   @PatchMapping("/rs/patch")
   public void patchUpdateResearch(@RequestBody Map<String, String> jsonMap) {
     String userId = jsonMap.get("userId");
     if (jsonMap.containsKey("keyword") && jsonMap.containsKey("eventName")) {
-      researchService.updateNameAndKeywordById(jsonMap.get("eventName"), jsonMap.get("keyword"), userId);
+      researchService.updateNameAndKeywordByUserId(jsonMap.get("eventName"), jsonMap.get("keyword"), userId);
     }
 
     if (!jsonMap.containsKey("keyword") && jsonMap.containsKey("eventName")) {
-      researchService.updateNameById(jsonMap.get("eventName"), userId);
+      researchService.updateNameByUserId(jsonMap.get("eventName"), userId);
     }
 
     if (jsonMap.containsKey("keyword") && !jsonMap.containsKey("eventName")) {
-      researchService.updateKeywordById(jsonMap.get("keyword"), userId);
+      researchService.updateKeywordByUserId(jsonMap.get("keyword"), userId);
     }
   }
 }

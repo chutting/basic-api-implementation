@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -90,7 +91,14 @@ public class RsController {
 
     int userId = Integer.parseInt(voteJsonMap.get("userId"));
     int voteNum = Integer.parseInt(voteJsonMap.get("voteNum"));
-    String voteTime = voteJsonMap.get("voteTime");
+
+    String voteTime = "";
+    if (voteJsonMap.containsKey("voteTime")) {
+      voteTime = voteJsonMap.get("voteTime");
+    } else {
+      voteTime = LocalDateTime.now().toString();
+    }
+
 
     boolean isVoteSuccess = userService.vote(userId, voteNum, rsEventId);
 

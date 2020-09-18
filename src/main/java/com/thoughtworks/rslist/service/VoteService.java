@@ -4,6 +4,8 @@ import com.thoughtworks.rslist.Repo.VoteRepo;
 import com.thoughtworks.rslist.entity.VoteEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -35,5 +37,13 @@ public class VoteService {
       return new LinkedList<>();
     }
     return allByResearchId.get();
+  }
+
+  public List<VoteEntity> getVotesByTime(String startTime, String endTime) {
+    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    LocalDateTime startLocalDateTime = LocalDateTime.parse(startTime, dateFormat);
+    LocalDateTime endLocalDateTime = LocalDateTime.parse(endTime, dateFormat);
+
+    return voteRepo.findAllByVoteTimeBetween(startLocalDateTime, endLocalDateTime);
   }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,13 +52,18 @@ public class ResearchService {
   }
 
   @Transactional
-  public void updateNameByUserId(String name, String id) {
-    researchRepo.updateNameByUserId(name, Integer.parseInt(id));
-  }
+  public void updateByUserId(Map<String, String> jsonMap) {
+    int userId = Integer.parseInt(jsonMap.get("userId"));
 
-  @Transactional
-  public void updateKeywordByUserId(String keyword, String id) {
-    researchRepo.updateKeywordByUserId(keyword, Integer.parseInt(id));
+    if (jsonMap.containsKey("eventName")) {
+      String name = jsonMap.get("eventName");
+      researchRepo.updateNameByUserId(name, userId);
+    }
+
+    if (jsonMap.containsKey("keyword")) {
+      String keyword = jsonMap.get("keyword");
+      researchRepo.updateKeywordByUserId(keyword, userId);
+    }
   }
 
   @Transactional

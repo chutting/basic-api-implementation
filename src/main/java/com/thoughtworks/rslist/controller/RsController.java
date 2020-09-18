@@ -149,14 +149,6 @@ public class RsController {
 
   @PatchMapping("/rs/patch")
   public void patchUpdateResearch(@RequestBody Map<String, String> jsonMap) {
-    String userId = jsonMap.get("userId");
-
-    if (jsonMap.containsKey("eventName")) {
-      researchService.updateNameByUserId(jsonMap.get("eventName"), userId);
-    }
-
-    if (jsonMap.containsKey("keyword")) {
-      researchService.updateKeywordByUserId(jsonMap.get("keyword"), userId);
-    }
+    researchService.updateByUserId(jsonMap);
   }
 }

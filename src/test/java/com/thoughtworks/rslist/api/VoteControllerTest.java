@@ -48,7 +48,7 @@ public class VoteControllerTest {
 
     String voteJsonString = "{\"voteNum\": \"5\"," +
         "                  \"userId\": " + userEntity.getId() + "," +
-        "                  \"voteTime\": \"current time\"" +"}";
+        "                  \"voteTime\": \"2017-09-28 17:07:05\"" +"}";
 
     mockMvc.perform(post("/rs/vote/2")
         .content(voteJsonString)
@@ -57,7 +57,7 @@ public class VoteControllerTest {
 
     String secondVoteJsonString = "{\"voteNum\": \"3\"," +
         "                  \"userId\": " + userEntity.getId() + "," +
-        "                  \"voteTime\": \"current time\"" +"}";
+        "                  \"voteTime\": \"2017-09-20 17:07:05\"" +"}";
 
     mockMvc.perform(post("/rs/vote/3")
         .content(secondVoteJsonString)

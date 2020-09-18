@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -101,17 +103,24 @@ public class RsController {
     ResearchEntity researchEntity = researchService.findResearchById(rsEventId);
     UserEntity userEntity = userService.findUserById(Integer.parseInt(voteJsonMap.get("userId")));
 
+    LocalDateTime localDateTime = convertTimeStringToLocalDateTime(voteJsonMap.get("voteTime"));
+
     if (isVoteSuccess) {
       VoteEntity newVoteEntity = VoteEntity.builder()
           .research(researchEntity)
           .user(userEntity)
           .voteNum(Integer.parseInt(voteJsonMap.get("voteNum")))
-          .voteTime(voteJsonMap.get("voteTime"))
+          .voteTime(localDateTime)
           .build();
       voteService.addVoteRecord(newVoteEntity);
       return ResponseEntity.created(null).build();
     }
     return ResponseEntity.badRequest().build();
+  }
+
+  private LocalDateTime convertTimeStringToLocalDateTime(String timeString) {
+    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    return LocalDateTime.parse(timeString, dateFormat);
   }
 
   @PutMapping("/rs/modify/{id}")

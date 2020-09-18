@@ -297,7 +297,7 @@ public class RsControllerTest {
 
     String voteJsonString = "{\"voteNum\": \"5\"," +
         "                  \"userId\": " + userEntity.getId() + "," +
-        "                  \"voteTime\": \"current time\"" +"}";
+        "                  \"voteTime\": \"2017-09-28 17:07:05\"" +"}";
 
     mockMvc.perform(post("/rs/vote/2")
         .content(voteJsonString)
@@ -306,7 +306,7 @@ public class RsControllerTest {
 
     String secondVoteJsonString = "{\"voteNum\": \"6\"," +
         "                  \"userId\": " + userEntity.getId() + "," +
-        "                  \"voteTime\": \"current time\"" +"}";
+        "                  \"voteTime\": \"2018-09-28 17:07:05\"" +"}";
 
     mockMvc.perform(post("/rs/vote/3")
         .content(secondVoteJsonString)
@@ -325,7 +325,7 @@ public class RsControllerTest {
 
     String voteJsonString = "{\"voteNum\": \"5\"," +
         "                  \"userId\": " + userEntity.getId() + "," +
-        "                  \"voteTime\": \"current time\"" +"}";
+        "                  \"voteTime\": \"2017-09-29 17:07:05\"" +"}";
 
     mockMvc.perform(post("/rs/vote/10")
         .content(voteJsonString)

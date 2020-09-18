@@ -6,6 +6,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
 public class Vote {
@@ -24,5 +25,5 @@ public class Vote {
   private Integer userId;
 
   @NotEmpty
-  private String voteTime;
+  private LocalDateTime voteTime;
 }

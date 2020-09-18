@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -40,7 +41,7 @@ public class VoteEntity {
   private UserEntity user;
 
   @Column(name = "vote_time")
-  private String voteTime;
+  private LocalDateTime voteTime;
 
   @JsonIgnore
   public ResearchEntity getResearch() {

@@ -61,11 +61,6 @@ public class ResearchService {
   }
 
   @Transactional
-  public void updateNameAndKeywordByUserId(String name, String keyword, String id) {
-    researchRepo.updateNameAndKeywordByUserId(name, keyword, Integer.parseInt(id));
-  }
-
-  @Transactional
   public void updateNameById(String name, int id) {
     researchRepo.updateNameById(name, id);
   }

@@ -2,12 +2,10 @@ package com.thoughtworks.rslist.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.thoughtworks.rslist.api.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -36,7 +34,7 @@ public class ResearchEntity {
   @Column(name = "name")
   private String eventName;
 
-  @OneToMany(mappedBy = "rsEventId", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "research", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
   private List<VoteEntity> voteList;
 
   private String keyword;

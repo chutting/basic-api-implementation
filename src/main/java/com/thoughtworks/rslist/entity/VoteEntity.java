@@ -1,5 +1,7 @@
 package com.thoughtworks.rslist.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -19,23 +22,33 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Component
 public class VoteEntity {
 
   @Id
   @GeneratedValue
   private Integer id;
 
-  @Column(name = "research_id")
-  private Integer rsEventId;
+  @ManyToOne
+  @JoinColumn(name = "research_id")
+  private ResearchEntity research;
 
   @Column(name = "vote_num")
   private Integer voteNum;
 
+  @ManyToOne
   @JoinColumn(name = "user_id")
-  @Column(name = "user_id")
-  private Integer userId;
+  private UserEntity user;
 
   @Column(name = "vote_time")
   private String voteTime;
+
+  @JsonIgnore
+  public ResearchEntity getResearch() {
+    return research;
+  }
+
+  @JsonProperty
+  public void setResearch(ResearchEntity research) {
+    this.research = research;
+  }
 }

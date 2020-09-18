@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.controller;
 import com.thoughtworks.rslist.api.Research;
 import com.thoughtworks.rslist.api.User;
 import com.thoughtworks.rslist.entity.ResearchEntity;
+import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.exceptions.RequestParamOutOfBoundsException;
@@ -97,10 +98,13 @@ public class RsController {
         Integer.parseInt(voteJsonMap.get("voteNum")),
         rsEventId);
 
+    ResearchEntity researchEntity = researchService.findResearchById(rsEventId);
+    UserEntity userEntity = userService.findUserById(Integer.parseInt(voteJsonMap.get("userId")));
+
     if (isVoteSuccess) {
       VoteEntity newVoteEntity = VoteEntity.builder()
-          .rsEventId(rsEventId)
-          .userId(Integer.parseInt(voteJsonMap.get("userId")))
+          .research(researchEntity)
+          .user(userEntity)
           .voteNum(Integer.parseInt(voteJsonMap.get("voteNum")))
           .voteTime(voteJsonMap.get("voteTime"))
           .build();
@@ -137,15 +141,12 @@ public class RsController {
   @PatchMapping("/rs/patch")
   public void patchUpdateResearch(@RequestBody Map<String, String> jsonMap) {
     String userId = jsonMap.get("userId");
-    if (jsonMap.containsKey("keyword") && jsonMap.containsKey("eventName")) {
-      researchService.updateNameAndKeywordByUserId(jsonMap.get("eventName"), jsonMap.get("keyword"), userId);
-    }
 
-    if (!jsonMap.containsKey("keyword") && jsonMap.containsKey("eventName")) {
+    if (jsonMap.containsKey("eventName")) {
       researchService.updateNameByUserId(jsonMap.get("eventName"), userId);
     }
 
-    if (jsonMap.containsKey("keyword") && !jsonMap.containsKey("eventName")) {
+    if (jsonMap.containsKey("keyword")) {
       researchService.updateKeywordByUserId(jsonMap.get("keyword"), userId);
     }
   }

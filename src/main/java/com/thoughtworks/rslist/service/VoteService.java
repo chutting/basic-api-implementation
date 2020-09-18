@@ -30,7 +30,7 @@ public class VoteService {
   }
 
   public List<VoteEntity> findAllByResearchId(int researchId) {
-    Optional<List<VoteEntity>> allByResearchId = voteRepo.findAllByRsEventId(researchId);
+    Optional<List<VoteEntity>> allByResearchId = voteRepo.findAllByResearchId(researchId);
     if (!allByResearchId.isPresent()) {
       return new LinkedList<>();
     }

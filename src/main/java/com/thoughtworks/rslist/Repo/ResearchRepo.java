@@ -27,16 +27,6 @@ public interface ResearchRepo extends CrudRepository<ResearchEntity, Integer> {
 
   @Transactional
   @Modifying
-  @Query(value = "update sys.research set name=?1,keyword=?2 where user_id=?3", nativeQuery = true)
-  int updateNameAndKeywordByUserId(String name, String keyword, Integer userId);
-
-  @Transactional
-  @Modifying
-  @Query(value = "update sys.research set vote_num=?1 where id=?2", nativeQuery = true)
-  int updateVoteNumById(Integer voteNum, Integer id);
-
-  @Transactional
-  @Modifying
   @Query(value = "update sys.research set name=?1 where id=?2", nativeQuery = true)
   int updateNameById(String name, Integer id);
 

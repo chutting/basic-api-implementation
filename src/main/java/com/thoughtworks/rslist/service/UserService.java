@@ -61,7 +61,7 @@ public class UserService {
     if (!userById.isPresent() || userById.get().getVoteNum() < voteNum || !researchById.isPresent()) {
       return false;
     }
-    researchRepo.updateVoteNumById(researchById.get().getVoteNum() + voteNum, researchId);
+
     userRepo.updateVoteNumById(userById.get().getVoteNum() - voteNum, userId);
     return true;
   }

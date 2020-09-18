@@ -6,11 +6,13 @@ import com.thoughtworks.rslist.api.Research;
 import com.thoughtworks.rslist.api.User;
 import com.thoughtworks.rslist.entity.ResearchEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.entity.VoteEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ResearchService {
@@ -30,7 +32,7 @@ public class ResearchService {
     ResearchEntity researchEntity = ResearchEntity.builder()
         .eventName(research.getName())
         .keyword(research.getKeyword())
-        .userId(userEntity.getId())
+        .user(userEntity)
         .build();
 
     return researchRepo.save(researchEntity);
@@ -76,5 +78,14 @@ public class ResearchService {
   @Transactional
   public void deleteById(int id) {
     researchRepo.deleteById(id);
+  }
+
+  public int getVoteSumById(int id) {
+    Optional<ResearchEntity> researchEntityOptional = researchRepo.findById(id);
+    if (!researchEntityOptional.isPresent()) {
+      throw new IndexOutOfBoundsException();
+    }
+    List<VoteEntity> voteList = researchEntityOptional.get().getVoteList();
+    return voteList.stream().collect(Collectors.summingInt(VoteEntity::getVoteNum));
   }
 }

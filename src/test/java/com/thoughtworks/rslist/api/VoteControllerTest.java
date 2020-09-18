@@ -4,6 +4,7 @@ import com.thoughtworks.rslist.Repo.ResearchRepo;
 import com.thoughtworks.rslist.Repo.UserRepo;
 import com.thoughtworks.rslist.entity.ResearchEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.service.ResearchService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,6 +33,9 @@ public class VoteControllerTest {
 
   @Autowired
   ResearchRepo researchRepo;
+
+  @Autowired
+  ResearchService researchService;
 
   @Test
   void couldGetVoteHistoryByUserId() throws Exception {
@@ -101,7 +105,7 @@ public class VoteControllerTest {
         .andExpect(jsonPath("$[0].voteNum", is(5)))
         .andExpect(jsonPath("$[1].voteNum", is(3)));
 
-    assertEquals(8, researchRepo.findById(researchEntity.getId()).get().getVoteNum());
+    assertEquals(8, researchService.getVoteSumById(researchEntity.getId()));
   }
 
   private UserEntity convertUserToUserEntity(User user) {
@@ -121,7 +125,7 @@ public class VoteControllerTest {
     return ResearchEntity.builder()
         .eventName(research.getName())
         .keyword(research.getKeyword())
-        .userId(userEntity.getId())
+        .user(userEntity)
         .build();
   }
 }

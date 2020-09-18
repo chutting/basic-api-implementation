@@ -15,9 +15,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import javax.persistence.Table;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
@@ -60,7 +57,6 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
-        .andExpect(jsonPath("$[0].voteNum", is(0)))
         .andExpect(jsonPath("$[0].id", is(2)))
         .andExpect(jsonPath("$[0]", not(hasKey("user"))));
   }
@@ -424,7 +420,9 @@ public class RsControllerTest {
   @Test
   void shouldFailWhenUserFieldInvalidWhenAddResearch() throws Exception {
     User userA = new User("ctt", 200, "female", "a@123.com", "1234567891");
+    userRepo.save(convertUserToUserEntity(userA));
     Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
 
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, userA);
 
@@ -436,6 +434,11 @@ public class RsControllerTest {
 
   @Test
   void shouldReturn400AndErrorCommentWhenRequestParamOutOfBounds() throws Exception {
+    User userA = new User("ctt", 200, "female", "a@123.com", "1234567891");
+    userRepo.save(convertUserToUserEntity(userA));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+
     mockMvc.perform(get("/rs/list?start=-1"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error", is("invalid request param")));
@@ -451,6 +454,11 @@ public class RsControllerTest {
 
   @Test
   void shouldReturn400AndErrorCommentWhenIndexOutOfBounds() throws Exception {
+    User userA = new User("ctt", 200, "female", "a@123.com", "1234567891");
+    userRepo.save(convertUserToUserEntity(userA));
+    Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+
     mockMvc.perform(get("/rs/findByIndex/-1"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error", is("invalid index")));
@@ -463,8 +471,8 @@ public class RsControllerTest {
   @Test
   void shouldReturn400AndErrorCommentWhenResearchUserNotValid() throws Exception {
     User user = new User("ctt", 200, "female", "a@123.com", "1234567891");
+    userRepo.save(convertUserToUserEntity(user));
     Research researchWithIndexFour = new Research("第四条事件", "教育", user);
-
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
 
     mockMvc.perform(post("/rs/add")
@@ -472,31 +480,6 @@ public class RsControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error", is("invalid param")));
-  }
-
-  private void addResearchShouldSuccess(String researchJsonString, String index) throws Exception {
-    MvcResult mvcResult = mockMvc.perform(post("/rs/add")
-        .content(researchJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andReturn();
-    int status = mvcResult.getResponse().getStatus();
-    String responseIndex = mvcResult.getResponse().getHeader("index");
-
-    assertEquals(201, status);
-    assertEquals(index, responseIndex);
-  }
-
-  private void checkRsListOriginalValue() throws Exception {
-    mockMvc.perform(get("/rs/list"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].name", is("第一条事件")))
-        .andExpect(jsonPath("$[0].voteNum", is(10)))
-        .andExpect(jsonPath("$[0].id", is(1)))
-        .andExpect(jsonPath("$[0]", not(hasKey("user"))))
-        .andExpect(jsonPath("$[1].name", is("第二条事件")))
-        .andExpect(jsonPath("$[1]", not(hasKey("user"))))
-        .andExpect(jsonPath("$[2].name", is("第三条事件")))
-        .andExpect(jsonPath("$[2]", not(hasKey("user"))));
   }
 
   private void performPut(String url, String jsonString) throws Exception {
@@ -522,7 +505,7 @@ public class RsControllerTest {
     return ResearchEntity.builder()
         .eventName(research.getName())
         .keyword(research.getKeyword())
-        .userId(userEntity.getId())
+        .user(userEntity)
         .build();
   }
 

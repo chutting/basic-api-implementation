@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thoughtworks.rslist.api.Research;
 import com.thoughtworks.rslist.api.User;
@@ -51,6 +52,7 @@ public class UserEntity {
   @Builder.Default
   private Integer voteNum = 10;
 
-  @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
+  @JsonIgnore
+  @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
   private List<ResearchEntity> researchList;
 }

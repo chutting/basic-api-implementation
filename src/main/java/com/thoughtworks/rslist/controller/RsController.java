@@ -95,24 +95,14 @@ public class RsController {
   public ResponseEntity vote(@PathVariable int rsEventId,
                              @RequestBody Map<String, String> voteJsonMap) {
 
-    boolean isVoteSuccess = userService.vote(
-        Integer.parseInt(voteJsonMap.get("userId")),
-        Integer.parseInt(voteJsonMap.get("voteNum")),
-        rsEventId);
+    int userId = Integer.parseInt(voteJsonMap.get("userId"));
+    int voteNum = Integer.parseInt(voteJsonMap.get("voteNum"));
+    String voteTime = voteJsonMap.get("voteTime");
 
-    ResearchEntity researchEntity = researchService.findResearchById(rsEventId);
-    UserEntity userEntity = userService.findUserById(Integer.parseInt(voteJsonMap.get("userId")));
-
-    LocalDateTime localDateTime = convertTimeStringToLocalDateTime(voteJsonMap.get("voteTime"));
+    boolean isVoteSuccess = userService.vote(userId, voteNum, rsEventId);
 
     if (isVoteSuccess) {
-      VoteEntity newVoteEntity = VoteEntity.builder()
-          .research(researchEntity)
-          .user(userEntity)
-          .voteNum(Integer.parseInt(voteJsonMap.get("voteNum")))
-          .voteTime(localDateTime)
-          .build();
-      voteService.addVoteRecord(newVoteEntity);
+      voteService.addVoteRecord(userId, voteNum, rsEventId, voteTime);
       return ResponseEntity.created(null).build();
     }
     return ResponseEntity.badRequest().build();
@@ -126,13 +116,7 @@ public class RsController {
   @PutMapping("/rs/modify/{id}")
   public void modifyResearch(@PathVariable int id, @RequestBody Research research) {
 
-    if (!research.getName().isEmpty()) {
-      researchService.updateNameById(research.getName(), id);
-    }
-    if (!research.getKeyword().isEmpty()) {
-      researchService.updateKeywordById(research.getKeyword(), id);
-    }
-
+    researchService.updateById(research, id);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

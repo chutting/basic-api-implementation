@@ -67,13 +67,13 @@ public class ResearchService {
   }
 
   @Transactional
-  public void updateNameById(String name, int id) {
-    researchRepo.updateNameById(name, id);
-  }
-
-  @Transactional
-  public void updateKeywordById(String keyword, int id) {
-    researchRepo.updateKeywordById(keyword, id);
+  public void updateById(Research research, int id) {
+    if (!research.getName().isEmpty()) {
+      researchRepo.updateNameById(research.getName(), id);
+    }
+    if (!research.getKeyword().isEmpty()) {
+      researchRepo.updateKeywordById(research.getKeyword(), id);
+    }
   }
 
   @Transactional

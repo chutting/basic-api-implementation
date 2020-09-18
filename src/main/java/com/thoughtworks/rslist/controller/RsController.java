@@ -1,10 +1,7 @@
 package com.thoughtworks.rslist.controller;
 
 import com.thoughtworks.rslist.api.Research;
-import com.thoughtworks.rslist.api.User;
 import com.thoughtworks.rslist.entity.ResearchEntity;
-import com.thoughtworks.rslist.entity.UserEntity;
-import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.exceptions.ErrorComment;
 import com.thoughtworks.rslist.exceptions.RequestParamOutOfBoundsException;
 import com.thoughtworks.rslist.service.ResearchService;
@@ -28,10 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -108,14 +101,8 @@ public class RsController {
     return ResponseEntity.badRequest().build();
   }
 
-  private LocalDateTime convertTimeStringToLocalDateTime(String timeString) {
-    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    return LocalDateTime.parse(timeString, dateFormat);
-  }
-
   @PutMapping("/rs/modify/{id}")
   public void modifyResearch(@PathVariable int id, @RequestBody Research research) {
-
     researchService.updateById(research, id);
   }
 

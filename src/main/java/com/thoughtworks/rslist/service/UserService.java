@@ -62,7 +62,12 @@ public class UserService {
       return false;
     }
 
-    userRepo.updateVoteNumById(userById.get().getVoteNum() - voteNum, userId);
+    UserEntity userEntity = userById.get();
+    int originalVoteNum = userEntity.getVoteNum();
+    userEntity.setVoteNum(originalVoteNum - voteNum);
+
+    userRepo.save(userEntity);
+
     return true;
   }
 }

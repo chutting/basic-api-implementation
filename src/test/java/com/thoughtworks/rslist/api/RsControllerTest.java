@@ -304,6 +304,8 @@ public class RsControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
 
+    assertEquals(5, userRepo.findById(userEntity.getId()).get().getVoteNum());
+
     String secondVoteJsonString = "{\"voteNum\": \"6\"," +
         "                  \"userId\": " + userEntity.getId() + "," +
         "                  \"voteTime\": \"2018-09-28 17:07:05\"" +"}";

@@ -54,25 +54,46 @@ public class ResearchService {
   @Transactional
   public void updateByUserId(Map<String, String> jsonMap) {
     int userId = Integer.parseInt(jsonMap.get("userId"));
+    Optional<UserEntity> userEntityOptional = userRepo.findById(userId);
+    if (!userEntityOptional.isPresent()) {
+      throw new RuntimeException();
+    }
+    UserEntity userEntity = userEntityOptional.get();
+    List<ResearchEntity> researchEntityList = researchRepo.findByUser(userEntity);
 
     if (jsonMap.containsKey("eventName")) {
       String name = jsonMap.get("eventName");
-      researchRepo.updateNameByUserId(name, userId);
+      if (researchEntityList.size() == 0) {
+        throw new RuntimeException();
+      }
+      researchEntityList.forEach(ele -> {
+        ele.setEventName(name);
+        researchRepo.save(ele);
+      });
     }
 
     if (jsonMap.containsKey("keyword")) {
       String keyword = jsonMap.get("keyword");
-      researchRepo.updateKeywordByUserId(keyword, userId);
+      if (researchEntityList.size() == 0) {
+        throw new RuntimeException();
+      }
+      researchEntityList.forEach(ele -> {
+        ele.setKeyword(keyword);
+        researchRepo.save(ele);
+      });
     }
   }
 
   @Transactional
   public void updateById(Research research, int id) {
+    ResearchEntity researchEntity = researchRepo.findById(id).get();
     if (!research.getName().isEmpty()) {
-      researchRepo.updateNameById(research.getName(), id);
+      researchEntity.setEventName(research.getName());
+      researchRepo.save(researchEntity);
     }
     if (!research.getKeyword().isEmpty()) {
-      researchRepo.updateKeywordById(research.getKeyword(), id);
+      researchEntity.setKeyword(research.getKeyword());
+      researchRepo.save(researchEntity);
     }
   }
 

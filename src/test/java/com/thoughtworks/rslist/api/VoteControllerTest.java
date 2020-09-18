@@ -7,7 +7,6 @@ import com.thoughtworks.rslist.entity.ResearchEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.service.ResearchService;
-import com.thoughtworks.rslist.service.UserService;
 import com.thoughtworks.rslist.service.VoteService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,31 +117,11 @@ public class VoteControllerTest {
 
     ResearchEntity researchEntity = researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
 
-    voteService.addVoteRecord(createVoteEntity(
-        userEntity,
-        researchEntity,
-        convertTimeStringToLocalDateTime("2017-09-20 17:07:05"),
-        1));
-    voteService.addVoteRecord(createVoteEntity(
-        userEntity,
-        researchEntity,
-        convertTimeStringToLocalDateTime("2017-09-23 17:07:05"),
-        1));
-    voteService.addVoteRecord(createVoteEntity(
-        userEntity,
-        researchEntity,
-        convertTimeStringToLocalDateTime("2017-09-01 17:07:05"),
-        1));
-    voteService.addVoteRecord(createVoteEntity(
-        userEntity,
-        researchEntity,
-        convertTimeStringToLocalDateTime("2017-08-20 17:07:05"),
-        1));
-    voteService.addVoteRecord(createVoteEntity(
-        userEntity,
-        researchEntity,
-        convertTimeStringToLocalDateTime("2017-10-20 17:07:05"),
-        1));
+    voteService.addVoteRecord(userEntity.getId(), 1, researchEntity.getId(), "2017-09-20 17:07:05");
+    voteService.addVoteRecord(userEntity.getId(), 1, researchEntity.getId(), "2017-09-23 17:07:05");
+    voteService.addVoteRecord(userEntity.getId(), 1, researchEntity.getId(), "2017-09-01 17:07:05");
+    voteService.addVoteRecord(userEntity.getId(), 1, researchEntity.getId(), "2017-08-20 17:07:05");
+    voteService.addVoteRecord(userEntity.getId(), 1, researchEntity.getId(), "2017-10-20 17:07:05");
 
     mockMvc.perform(get("/vote/getVotesByTime")
         .param("startTime", "2017-09-01 00:00:00")

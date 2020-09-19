@@ -30,7 +30,7 @@ public class UserController {
     this.userService = userService;
   }
 
-  @PostMapping("/user/register")
+  @PostMapping("/user")
   public ResponseEntity register(@RequestBody @Valid User user) {
     if (!userService.isExisted(user)) {
       UserEntity saveUserEntity = userService.save(user);
@@ -53,7 +53,7 @@ public class UserController {
     return ResponseEntity.ok(allUsers);
   }
 
-  @DeleteMapping("/user/delete/{id}")
+  @DeleteMapping("/user/{id}")
   public ResponseEntity deleteById(@PathVariable int id) {
     userService.deleteById(id);
     return ResponseEntity.noContent().build();

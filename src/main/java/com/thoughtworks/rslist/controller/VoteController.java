@@ -18,19 +18,19 @@ public class VoteController {
     this.voteService = voteService;
   }
 
-  @GetMapping("/vote/getVotesByUserId/{userId}")
+  @GetMapping("/votesByUserId/{userId}")
   public ResponseEntity<List<VoteEntity>> getVotesByUserId(@PathVariable int userId) {
     List<VoteEntity> allVotes = voteService.findAllByUserId(userId);
     return ResponseEntity.ok(allVotes);
   }
 
-  @GetMapping("/vote/getVotesByResearchId/{researchId}")
+  @GetMapping("/votesByResearchId/{researchId}")
   public ResponseEntity<List<VoteEntity>> getVotesByResearchId(@PathVariable int researchId) {
     List<VoteEntity> allVotesByResearchId = voteService.findAllByResearchId(researchId);
     return ResponseEntity.ok(allVotesByResearchId);
   }
 
-  @GetMapping("/vote/getVotesByTime")
+  @GetMapping("/votesByTime")
   public ResponseEntity<List<VoteEntity>> getVotesByTime(@RequestParam String startTime,
                                                          @RequestParam String endTime) {
     List<VoteEntity> votesByTime = voteService.getVotesByTime(startTime, endTime);

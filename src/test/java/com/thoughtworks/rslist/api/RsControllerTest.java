@@ -55,7 +55,7 @@ public class RsControllerTest {
     Research researchWithIndexFour = new Research("第四条事件", "教育", user);
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
         .andExpect(jsonPath("$[0].id", is(1)))
@@ -73,11 +73,11 @@ public class RsControllerTest {
     Research researchWithIndexOne = new Research("第一条事件", "情感", user);
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
-    mockMvc.perform(get("/rs/findByIndex/1"))
+    mockMvc.perform(get("/research/1"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.eventName", is("第四条事件")));
 
-    mockMvc.perform(get("/rs/findByIndex/2"))
+    mockMvc.perform(get("/research/2"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.eventName", is("第一条事件")));
   }
@@ -96,7 +96,7 @@ public class RsControllerTest {
     Research researchWithIndexTwo = new Research("第二条事件", "经济", user);
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexTwo));
 
-    mockMvc.perform(get("/rs/list?start=2&end=3"))
+    mockMvc.perform(get("/researches?start=2&end=3"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
         .andExpect(jsonPath("$[0]", not(hasKey("user"))))
@@ -118,7 +118,7 @@ public class RsControllerTest {
     Research researchWithIndexTwo = new Research("第二条事件", "经济", user);
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexTwo));
 
-    mockMvc.perform(get("/rs/list?start=2"))
+    mockMvc.perform(get("/researches?start=2"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
         .andExpect(jsonPath("$[0]", not(hasKey("user"))))
@@ -140,7 +140,7 @@ public class RsControllerTest {
     Research researchWithIndexTwo = new Research("第二条事件", "经济", user);
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexTwo));
 
-    mockMvc.perform(get("/rs/list?end=2"))
+    mockMvc.perform(get("/researches?end=2"))
         .andExpect(status().isOk())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
@@ -158,7 +158,7 @@ public class RsControllerTest {
 
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
 
-    MvcResult mvcResult = mockMvc.perform(post("/rs/add")
+    MvcResult mvcResult = mockMvc.perform(post("/research")
         .content(researchIndexFourJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andReturn();
@@ -169,7 +169,7 @@ public class RsControllerTest {
     assertEquals(201, status);
     assertEquals("1", responseIndex);
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
         .andExpect(jsonPath("$[0].keyword", is("教育")));
@@ -184,7 +184,7 @@ public class RsControllerTest {
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
 
 
-    mockMvc.perform(post("/rs/add")
+    mockMvc.perform(post("/research")
         .content(researchIndexFourJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
@@ -201,17 +201,17 @@ public class RsControllerTest {
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
     String researchIndexOneJsonString = convertResearchToJsonString(researchWithIndexOne, user);
 
-    mockMvc.perform(post("/rs/add")
+    mockMvc.perform(post("/research")
         .content(researchIndexFourJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
 
-    mockMvc.perform(post("/rs/add")
+    mockMvc.perform(post("/research")
         .content(researchIndexOneJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
 
-    mockMvc.perform(delete("/user/delete/1"))
+    mockMvc.perform(delete("/user/1"))
         .andExpect(status().isNoContent());
 
     assertEquals(0, researchRepo.findAll().size());
@@ -230,12 +230,12 @@ public class RsControllerTest {
         "                  \"keyword\": \"新的关键字\"," +
         "                  \"userId\": " + userEntity.getId() +"}";
 
-    mockMvc.perform(patch("/rs/patch")
+    mockMvc.perform(patch("/researches")
         .content(updateJson)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("新的热搜事件名")))
         .andExpect(jsonPath("$[1].keyword", is("新的关键字")));
@@ -253,12 +253,12 @@ public class RsControllerTest {
     String updateJson = "{ \"keyword\": \"新的关键字\"," +
         "                  \"userId\": " + userEntity.getId() +"}";
 
-    mockMvc.perform(patch("/rs/patch")
+    mockMvc.perform(patch("/researches")
         .content(updateJson)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
         .andExpect(jsonPath("$[1].keyword", is("新的关键字")));
@@ -276,12 +276,12 @@ public class RsControllerTest {
     String updateJson = "{\"eventName\": \"新的热搜事件名\"," +
         "                  \"userId\": " + userEntity.getId() +"}";
 
-    mockMvc.perform(patch("/rs/patch")
+    mockMvc.perform(patch("/researches")
         .content(updateJson)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("新的热搜事件名")))
         .andExpect(jsonPath("$[1].keyword", is("情感")));
@@ -300,7 +300,7 @@ public class RsControllerTest {
         "                  \"userId\": " + userEntity.getId() + "," +
         "                  \"voteTime\": \"2017-09-28 17:07:05\"" +"}";
 
-    mockMvc.perform(post("/rs/vote/2")
+    mockMvc.perform(post("/research/2/vote")
         .content(voteJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
@@ -311,7 +311,7 @@ public class RsControllerTest {
         "                  \"userId\": " + userEntity.getId() + "," +
         "                  \"voteTime\": \"2018-09-28 17:07:05\"" +"}";
 
-    mockMvc.perform(post("/rs/vote/3")
+    mockMvc.perform(post("/research/3/vote")
         .content(secondVoteJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
@@ -330,7 +330,7 @@ public class RsControllerTest {
         "                  \"userId\": " + userEntity.getId() + "," +
         "                  \"voteTime\": \"2017-09-29 17:07:05\"" +"}";
 
-    mockMvc.perform(post("/rs/vote/10")
+    mockMvc.perform(post("/research/10/vote")
         .content(voteJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
@@ -349,9 +349,9 @@ public class RsControllerTest {
 
     String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified, user);
 
-    performPut("/rs/modify/" + researchEntity.getId(), researchIndexOneJsonStringModified);
+    performPut("/research/" + researchEntity.getId(), researchIndexOneJsonStringModified);
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[1].eventName", is("经过修改后的第一条事件")))
         .andExpect(jsonPath("$[1].keyword", is("经济")));
@@ -370,9 +370,9 @@ public class RsControllerTest {
 
     String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified, user);
 
-    performPut("/rs/modify/" + researchEntity.getId(), researchIndexOneJsonStringModified);
+    performPut("/research/" + researchEntity.getId(), researchIndexOneJsonStringModified);
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[1].eventName", is("经过修改后的第一条事件")))
         .andExpect(jsonPath("$[1].keyword", is("情感")));
@@ -391,9 +391,9 @@ public class RsControllerTest {
 
     String researchIndexOneJsonStringModified = convertResearchToJsonString(researchWithIndexOneModified, user);
 
-    performPut("/rs/modify/" + researchEntity.getId(), researchIndexOneJsonStringModified);
+    performPut("/research/" + researchEntity.getId(), researchIndexOneJsonStringModified);
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[1].eventName", is("第一条事件")))
         .andExpect(jsonPath("$[1].keyword", is("军事")));
@@ -408,14 +408,14 @@ public class RsControllerTest {
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
     ResearchEntity researchEntity = researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)));
 
-    mockMvc.perform(delete("/rs/delete/" + researchEntity.getId()))
+    mockMvc.perform(delete("/research/" + researchEntity.getId()))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/rs/list"))
+    mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
   }
@@ -429,7 +429,7 @@ public class RsControllerTest {
 
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, userA);
 
-    mockMvc.perform(post("/rs/add")
+    mockMvc.perform(post("/research")
         .content(researchIndexFourJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
@@ -442,15 +442,15 @@ public class RsControllerTest {
     Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
 
-    mockMvc.perform(get("/rs/list?start=-1"))
+    mockMvc.perform(get("/researches?start=-1"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error", is("invalid request param")));
 
-    mockMvc.perform(get("/rs/list?start=2&end=1"))
+    mockMvc.perform(get("/researches?start=2&end=1"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error", is("invalid request param")));
 
-    mockMvc.perform(get("/rs/list?end=100"))
+    mockMvc.perform(get("/researches?end=100"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error", is("invalid request param")));
   }
@@ -462,11 +462,11 @@ public class RsControllerTest {
     Research researchWithIndexFour = new Research("第四条事件", "教育", userA);
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
 
-    mockMvc.perform(get("/rs/findByIndex/-1"))
+    mockMvc.perform(get("/research/-1"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error", is("invalid index")));
 
-    mockMvc.perform(get("/rs/findByIndex/500"))
+    mockMvc.perform(get("/research/500"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error", is("invalid index")));
   }
@@ -478,7 +478,7 @@ public class RsControllerTest {
     Research researchWithIndexFour = new Research("第四条事件", "教育", user);
     String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
 
-    mockMvc.perform(post("/rs/add")
+    mockMvc.perform(post("/research")
         .content(researchIndexFourJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest())

@@ -44,7 +44,7 @@ public class RsController {
     this.voteService = voteService;
   }
 
-  @GetMapping("/rs/list")
+  @GetMapping("/researches")
   public ResponseEntity<List<ResearchEntity>> getRsList(@RequestParam(required = false) Integer start,
                                   @RequestParam(required = false) Integer end) {
 
@@ -66,14 +66,13 @@ public class RsController {
     return ResponseEntity.ok(outputRsList);
   }
 
-  @GetMapping("/rs/findByIndex/{id}")
+  @GetMapping("/research/{id}")
   public ResponseEntity<ResearchEntity> getResearchByIndex(@PathVariable int id) {
 
     return ResponseEntity.ok(researchService.findResearchById(id));
   }
 
-  @PostMapping("/rs/add")
-  @Transactional
+  @PostMapping("/research")
   public ResponseEntity addResearch(@RequestBody @Valid Research research) {
     if (!userService.isExisted(research.getUser())) {
       return ResponseEntity.badRequest().build();
@@ -84,8 +83,7 @@ public class RsController {
     return ResponseEntity.created(null).header("index", String.valueOf(researchEntity.getId())).build();
   }
 
-  @PostMapping("/rs/vote/{rsEventId}")
-  @Transactional
+  @PostMapping("/research/{rsEventId}/vote")
   public ResponseEntity vote(@PathVariable int rsEventId,
                              @RequestBody Map<String, String> voteJsonMap) {
 
@@ -109,7 +107,7 @@ public class RsController {
     return ResponseEntity.badRequest().build();
   }
 
-  @PutMapping("/rs/modify/{id}")
+  @PutMapping("/research/{id}")
   public void modifyResearch(@PathVariable int id, @RequestBody Research research) {
     researchService.updateById(research, id);
   }
@@ -121,12 +119,12 @@ public class RsController {
     return ResponseEntity.badRequest().body(errorComment);
   }
 
-  @DeleteMapping("/rs/delete/{id}")
+  @DeleteMapping("/research/{id}")
   public void deleteResearch(@PathVariable int id) {
     researchService.deleteById(id);
   }
 
-  @PatchMapping("/rs/patch")
+  @PatchMapping("/researches")
   public void patchUpdateResearch(@RequestBody Map<String, String> jsonMap) {
     researchService.updateByUserId(jsonMap);
   }

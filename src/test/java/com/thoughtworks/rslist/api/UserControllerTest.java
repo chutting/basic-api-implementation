@@ -32,7 +32,7 @@ class UserControllerTest {
 
     ObjectMapper objectMapper = new ObjectMapper();
     String userJsonString = objectMapper.writeValueAsString(user);
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andReturn();
@@ -51,11 +51,11 @@ class UserControllerTest {
     String userAJsonString = objectMapper.writeValueAsString(userA);
     String userBJsonString = objectMapper.writeValueAsString(userB);
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userAJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE));
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userBJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE));
 
@@ -74,15 +74,15 @@ class UserControllerTest {
     String userAJsonString = objectMapper.writeValueAsString(userA);
     String userBJsonString = objectMapper.writeValueAsString(userB);
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userAJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE));
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userBJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE));
 
-    mockMvc.perform(delete("/user/delete/1"))
+    mockMvc.perform(delete("/user/1"))
         .andExpect(status().isNoContent());
 
     mockMvc.perform(get("/users"))
@@ -100,12 +100,12 @@ class UserControllerTest {
     String userAJsonString = objectMapper.writeValueAsString(userA);
     String userBJsonString = objectMapper.writeValueAsString(userB);
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userAJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userBJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
@@ -122,7 +122,7 @@ class UserControllerTest {
     User user = new User("ctt", 18, "female", "a@thoughtworks.com", "18888888888");
     ObjectMapper objectMapper = new ObjectMapper();
     String userJsonString = objectMapper.writeValueAsString(user);
-    MvcResult mvcResult = mockMvc.perform(post("/user/register")
+    MvcResult mvcResult = mockMvc.perform(post("/user")
         .content(userJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andReturn();
@@ -208,12 +208,12 @@ class UserControllerTest {
     String userAJsonString = objectMapper.writeValueAsString(userA);
     String userBJsonString = objectMapper.writeValueAsString(userB);
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userAJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userBJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
@@ -231,7 +231,7 @@ class UserControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String userJsonString = objectMapper.writeValueAsString(user);
 
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest())
@@ -241,7 +241,7 @@ class UserControllerTest {
   private void verifyInvalidUserFields(User user) throws Exception {
     ObjectMapper objectMapper = new ObjectMapper();
     String userJsonString = objectMapper.writeValueAsString(user);
-    mockMvc.perform(post("/user/register")
+    mockMvc.perform(post("/user")
         .content(userJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());

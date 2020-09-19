@@ -60,7 +60,7 @@ public class VoteControllerTest {
     voteRepo.save(createVoteEntity(userEntity, researchEntityFour, convertTimeStringToLocalDateTime("2017-09-20 17:07:05"), 5));
     voteRepo.save(createVoteEntity(userEntity, researchEntityOne, convertTimeStringToLocalDateTime("2017-09-20 17:07:05"), 3));
 
-    mockMvc.perform(get("/vote/getVotesByUserId/" + userEntity.getId()))
+    mockMvc.perform(get("/votesByUserId/" + userEntity.getId()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)))
         .andExpect(jsonPath("$[0].voteNum", is(5)))
@@ -82,7 +82,7 @@ public class VoteControllerTest {
 
     voteRepo.save(createVoteEntity(userEntityClone, researchEntity, convertTimeStringToLocalDateTime("2019-09-20 17:07:05"), 3));
 
-    mockMvc.perform(get("/vote/getVotesByResearchId/" + researchEntity.getId()))
+    mockMvc.perform(get("/votesByResearchId/" + researchEntity.getId()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)))
         .andExpect(jsonPath("$[0].voteNum", is(5)))
@@ -106,7 +106,7 @@ public class VoteControllerTest {
     voteService.addVoteRecord(userEntity.getId(), 1, researchEntity.getId(), "2017-08-20 17:07:05");
     voteService.addVoteRecord(userEntity.getId(), 1, researchEntity.getId(), "2017-10-20 17:07:05");
 
-    mockMvc.perform(get("/vote/getVotesByTime")
+    mockMvc.perform(get("/votesByTime")
         .param("startTime", "2017-09-01 00:00:00")
         .param("endTime","2017-10-01 00:00:00"))
         .andExpect(status().isOk())

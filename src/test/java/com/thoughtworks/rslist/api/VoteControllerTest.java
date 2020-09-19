@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -55,26 +54,11 @@ public class VoteControllerTest {
     UserEntity userEntity = userRepo.save(convertUserToUserEntity(user));
     Research researchWithIndexFour = new Research("第四条事件", "教育", user);
     Research researchWithIndexOne = new Research("第一条事件", "情感", user);
-    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
-    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
+    ResearchEntity researchEntityFour = researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    ResearchEntity researchEntityOne = researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
-    String voteJsonString = "{\"voteNum\": \"5\"," +
-        "                  \"userId\": " + userEntity.getId() + "," +
-        "                  \"voteTime\": \"2017-09-28 17:07:05\"" +"}";
-
-    mockMvc.perform(post("/rs/vote/2")
-        .content(voteJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isCreated());
-
-    String secondVoteJsonString = "{\"voteNum\": \"3\"," +
-        "                  \"userId\": " + userEntity.getId() + "," +
-        "                  \"voteTime\": \"2017-09-20 17:07:05\"" +"}";
-
-    mockMvc.perform(post("/rs/vote/3")
-        .content(secondVoteJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isCreated());
+    voteRepo.save(createVoteEntity(userEntity, researchEntityFour, convertTimeStringToLocalDateTime("2017-09-20 17:07:05"), 5));
+    voteRepo.save(createVoteEntity(userEntity, researchEntityOne, convertTimeStringToLocalDateTime("2017-09-20 17:07:05"), 3));
 
     mockMvc.perform(get("/vote/getVotesByUserId/" + userEntity.getId()))
         .andExpect(status().isOk())
@@ -95,7 +79,6 @@ public class VoteControllerTest {
     ResearchEntity researchEntity = researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
 
     voteRepo.save(createVoteEntity(userEntity, researchEntity, convertTimeStringToLocalDateTime("2017-09-20 17:07:05"), 5));
-
 
     voteRepo.save(createVoteEntity(userEntityClone, researchEntity, convertTimeStringToLocalDateTime("2019-09-20 17:07:05"), 3));
 

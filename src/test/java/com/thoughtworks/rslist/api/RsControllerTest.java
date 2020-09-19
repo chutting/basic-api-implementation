@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RsControllerTest {
   @Autowired
   UserRepo userRepo;
+
   @Autowired
   ResearchRepo researchRepo;
 
@@ -57,7 +58,7 @@ public class RsControllerTest {
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
-        .andExpect(jsonPath("$[0].id", is(2)))
+        .andExpect(jsonPath("$[0].id", is(1)))
         .andExpect(jsonPath("$[0]", not(hasKey("user"))));
   }
 
@@ -72,11 +73,11 @@ public class RsControllerTest {
     Research researchWithIndexOne = new Research("第一条事件", "情感", user);
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
-    mockMvc.perform(get("/rs/findByIndex/2"))
+    mockMvc.perform(get("/rs/findByIndex/1"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.eventName", is("第四条事件")));
 
-    mockMvc.perform(get("/rs/findByIndex/3"))
+    mockMvc.perform(get("/rs/findByIndex/2"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.eventName", is("第一条事件")));
   }
@@ -166,7 +167,7 @@ public class RsControllerTest {
     String responseIndex = mvcResult.getResponse().getHeader("index");
 
     assertEquals(201, status);
-    assertEquals("2", responseIndex);
+    assertEquals("1", responseIndex);
 
     mockMvc.perform(get("/rs/list"))
         .andExpect(status().isOk())

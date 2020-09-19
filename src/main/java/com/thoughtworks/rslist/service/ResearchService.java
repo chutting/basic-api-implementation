@@ -7,7 +7,6 @@ import com.thoughtworks.rslist.api.User;
 import com.thoughtworks.rslist.entity.ResearchEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.entity.VoteEntity;
-import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -15,14 +14,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
 public class ResearchService {
-  private final ResearchRepo researchRepo;
-  private final UserRepo userRepo;
 
-  public ResearchService(ResearchRepo researchRepo, UserRepo userRepo) {
-    this.researchRepo = researchRepo;
+  private final UserRepo userRepo;
+  private final ResearchRepo researchRepo;
+
+  public ResearchService(UserRepo userRepo, ResearchRepo researchRepo) {
     this.userRepo = userRepo;
+    this.researchRepo = researchRepo;
   }
 
   public ResearchEntity save(Research research) {

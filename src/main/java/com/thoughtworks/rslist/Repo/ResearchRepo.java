@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ResearchRepo extends CrudRepository<ResearchEntity, Integer> {
+
   @Override
   List<ResearchEntity> findAll();
 

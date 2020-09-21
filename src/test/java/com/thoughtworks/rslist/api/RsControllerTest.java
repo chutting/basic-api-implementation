@@ -233,7 +233,7 @@ public class RsControllerTest {
     mockMvc.perform(patch("/researches")
         .content(updateJson)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
@@ -256,7 +256,7 @@ public class RsControllerTest {
     mockMvc.perform(patch("/researches")
         .content(updateJson)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
@@ -279,7 +279,7 @@ public class RsControllerTest {
     mockMvc.perform(patch("/researches")
         .content(updateJson)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
@@ -413,7 +413,7 @@ public class RsControllerTest {
         .andExpect(jsonPath("$", hasSize(2)));
 
     mockMvc.perform(delete("/research/" + researchEntity.getId()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     mockMvc.perform(get("/researches"))
         .andExpect(status().isOk())
@@ -489,7 +489,7 @@ public class RsControllerTest {
     mockMvc.perform(put(url)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .content(jsonString))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
   }
 
   private String convertResearchToJsonString(Research research, User user) throws Exception {

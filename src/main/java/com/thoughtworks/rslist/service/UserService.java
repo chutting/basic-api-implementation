@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.Repo.UserRepo;
 import com.thoughtworks.rslist.api.User;
 import com.thoughtworks.rslist.entity.ResearchEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -44,6 +45,7 @@ public class UserService {
     return userRepo.findById(id).get();
   }
 
+  @Transactional
   public void deleteById(int id) {
     userRepo.deleteById(id);
   }

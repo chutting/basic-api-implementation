@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.Repo.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
   @Autowired
   MockMvc mockMvc;
+
+  @Autowired
+  UserRepo userRepo;
 
   @Test
   void validAddUserToDatabaseSuccessfully() throws Exception {

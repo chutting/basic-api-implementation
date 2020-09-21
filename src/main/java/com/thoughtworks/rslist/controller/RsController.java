@@ -108,8 +108,9 @@ public class RsController {
   }
 
   @PutMapping("/research/{id}")
-  public void modifyResearch(@PathVariable int id, @RequestBody Research research) {
+  public ResponseEntity modifyResearch(@PathVariable int id, @RequestBody Research research) {
     researchService.updateById(research, id);
+    return ResponseEntity.noContent().build();
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -120,12 +121,14 @@ public class RsController {
   }
 
   @DeleteMapping("/research/{id}")
-  public void deleteResearch(@PathVariable int id) {
+  public ResponseEntity deleteResearch(@PathVariable int id) {
     researchService.deleteById(id);
+    return ResponseEntity.noContent().build();
   }
 
   @PatchMapping("/researches")
-  public void patchUpdateResearch(@RequestBody Map<String, String> jsonMap) {
+  public ResponseEntity patchUpdateResearch(@RequestBody Map<String, String> jsonMap) {
     researchService.updateByUserId(jsonMap);
+    return ResponseEntity.noContent().build();
   }
 }

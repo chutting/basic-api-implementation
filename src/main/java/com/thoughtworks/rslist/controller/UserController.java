@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -24,7 +26,7 @@ import java.util.List;
 public class UserController {
   Logger logger = LogManager.getLogger(UserController.class);
 
-  final UserService userService;
+  private final UserService userService;
 
   public UserController(UserService userService) {
     this.userService = userService;

@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.Repo.UserRepo;
+import com.thoughtworks.rslist.entity.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,9 +42,7 @@ class UserControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andReturn();
 
-    mockMvc.perform(get("/users"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+    assertEquals(1, userRepo.findAll().size());
   }
 
   @Test
@@ -51,17 +50,8 @@ class UserControllerTest {
     User userA = new User("ctt", 18, "female", "a@thoughtworks.com", "18888888888");
     User userB = new User("cttClone", 18, "female", "a@thoughtworks.com", "18888888888");
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    String userAJsonString = objectMapper.writeValueAsString(userA);
-    String userBJsonString = objectMapper.writeValueAsString(userB);
-
-    mockMvc.perform(post("/user")
-        .content(userAJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE));
-
-    mockMvc.perform(post("/user")
-        .content(userBJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE));
+    userRepo.save(convertUserToUserEntity(userA));
+    userRepo.save(convertUserToUserEntity(userB));
 
     mockMvc.perform(get("/user/2"))
         .andExpect(status().isOk())
@@ -74,25 +64,14 @@ class UserControllerTest {
     User userA = new User("ctt", 18, "female", "a@thoughtworks.com", "18888888888");
     User userB = new User("cttClone", 18, "female", "a@thoughtworks.com", "18888888888");
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    String userAJsonString = objectMapper.writeValueAsString(userA);
-    String userBJsonString = objectMapper.writeValueAsString(userB);
-
-    mockMvc.perform(post("/user")
-        .content(userAJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE));
-
-    mockMvc.perform(post("/user")
-        .content(userBJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE));
+    userRepo.save(convertUserToUserEntity(userA));
+    userRepo.save(convertUserToUserEntity(userB));
 
     mockMvc.perform(delete("/user/1"))
         .andExpect(status().isNoContent());
 
-    mockMvc.perform(get("/users"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].userName", is("cttClone")));
+    assertEquals(1, userRepo.findAll().size());
+    assertEquals("cttClone", userRepo.findById(2).get().getUserName());
   }
 
   @Test
@@ -114,11 +93,7 @@ class UserControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
 
-
-    mockMvc.perform(get("/users"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].userName", is("ctt")));
+    assertEquals(1, userRepo.findAll().size());
   }
 
   @Test
@@ -208,19 +183,8 @@ class UserControllerTest {
     User userA = new User("ctt", 20, "male", "c@thoughtworks.com", "18888888818");
     User userB = new User("cttClone", 18, "female", "a@thoughtworks.com", "18888888888");
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    String userAJsonString = objectMapper.writeValueAsString(userA);
-    String userBJsonString = objectMapper.writeValueAsString(userB);
-
-    mockMvc.perform(post("/user")
-        .content(userAJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isCreated());
-
-    mockMvc.perform(post("/user")
-        .content(userBJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isCreated());
+    userRepo.save(convertUserToUserEntity(userA));
+    userRepo.save(convertUserToUserEntity(userB));
 
     mockMvc.perform(get("/users"))
         .andExpect(status().isOk())
@@ -249,5 +213,15 @@ class UserControllerTest {
         .content(userJsonString)
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
+  }
+
+  private UserEntity convertUserToUserEntity(User user) {
+    return UserEntity.builder()
+        .userName(user.getUserName())
+        .phoneNumber(user.getPhoneNumber())
+        .email(user.getEmail())
+        .gender(user.getGender())
+        .age(user.getAge())
+        .build();
   }
 }

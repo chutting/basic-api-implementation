@@ -198,18 +198,8 @@ public class RsControllerTest {
     Research researchWithIndexFour = new Research("第四条事件", "教育", user);
     Research researchWithIndexOne = new Research("第一条事件", "情感", user);
 
-    String researchIndexFourJsonString = convertResearchToJsonString(researchWithIndexFour, user);
-    String researchIndexOneJsonString = convertResearchToJsonString(researchWithIndexOne, user);
-
-    mockMvc.perform(post("/research")
-        .content(researchIndexFourJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isCreated());
-
-    mockMvc.perform(post("/research")
-        .content(researchIndexOneJsonString)
-        .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isCreated());
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
+    researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
     mockMvc.perform(delete("/user/1"))
         .andExpect(status().isNoContent());
@@ -235,10 +225,8 @@ public class RsControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isNoContent());
 
-    mockMvc.perform(get("/researches"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].eventName", is("新的热搜事件名")))
-        .andExpect(jsonPath("$[1].keyword", is("新的关键字")));
+    assertEquals("新的热搜事件名", researchRepo.findById(1).get().getEventName());
+    assertEquals("新的关键字", researchRepo.findById(2).get().getKeyword());
   }
 
   @Test
@@ -258,10 +246,8 @@ public class RsControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isNoContent());
 
-    mockMvc.perform(get("/researches"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].eventName", is("第四条事件")))
-        .andExpect(jsonPath("$[1].keyword", is("新的关键字")));
+    assertEquals("第四条事件", researchRepo.findById(1).get().getEventName());
+    assertEquals("新的关键字", researchRepo.findById(2).get().getKeyword());
   }
 
   @Test
@@ -281,10 +267,8 @@ public class RsControllerTest {
         .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isNoContent());
 
-    mockMvc.perform(get("/researches"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].eventName", is("新的热搜事件名")))
-        .andExpect(jsonPath("$[1].keyword", is("情感")));
+    assertEquals("新的热搜事件名", researchRepo.findById(1).get().getEventName());
+    assertEquals("情感", researchRepo.findById(2).get().getKeyword());
   }
 
   @Test
@@ -408,16 +392,12 @@ public class RsControllerTest {
     researchRepo.save(convertResearchToResearchEntity(researchWithIndexFour));
     ResearchEntity researchEntity = researchRepo.save(convertResearchToResearchEntity(researchWithIndexOne));
 
-    mockMvc.perform(get("/researches"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)));
+    assertEquals(2, researchRepo.findAll().size());
 
     mockMvc.perform(delete("/research/" + researchEntity.getId()))
         .andExpect(status().isNoContent());
 
-    mockMvc.perform(get("/researches"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+    assertEquals(1, researchRepo.findAll().size());
   }
 
   @Test
